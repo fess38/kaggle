@@ -1,0 +1,5 @@
+defaults:
+  - _self_
+  - /base_dvc_config@_here_
+
+competition_id: titanic

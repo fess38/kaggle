@@ -1,0 +1,2 @@
+fess38.common.bin_requirements @ file:///usr/local/lib/kaggle/common/bin_requirements
+fess38.competitions.titanic.lib @ file:///usr/local/lib/kaggle/competitions/titanic/lib

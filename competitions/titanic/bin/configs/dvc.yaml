@@ -1,0 +1,19 @@
+vars:
+  - dvc_config.yaml
+
+stages:
+  download_data:
+    cmd: python ${local.code_dir}/stages/download_data.py
+    deps:
+      - ${local.code_dir}/stages/download_data.py
+    outs:
+      - source_data/:
+          cache: false
+  prepare_data:
+    cmd: python ${local.code_dir}/stages/prepare_data.py
+    deps:
+      - ${local.code_dir}/stages/prepare_data.py
+      - source_data/
+    outs:
+      - prepared_data/:
+          cache: false

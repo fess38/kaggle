@@ -1,0 +1,8 @@
+[project]
+name = "fess38.competitions.titanic"
+version = "2023.10.14"
+requires-python = ">=3.10"
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }

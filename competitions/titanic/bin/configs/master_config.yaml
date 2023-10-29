@@ -1,8 +1,0 @@
-hydra:
-  job:
-    chdir: true
-    env_set:
-      DVC_NO_ANALYTICS: true
-  run:
-    dir: ../outputs
-  verbose: false

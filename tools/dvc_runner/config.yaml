@@ -1,0 +1,12 @@
+project_dir: ???
+params_path: configs/params.yaml
+dvc_config_path: configs/dvc.yaml
+operation_runner_path: tools/operation_runner/__main__.py
+
+hydra:
+  job:
+    chdir: true
+    env_set:
+      DVC_NO_ANALYTICS: "1"
+  run:
+    dir: ${project_dir}/outputs

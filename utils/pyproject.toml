@@ -1,0 +1,12 @@
+[project]
+name = "fess38.utils"
+version = "2023.10.19"
+requires-python = ">=3.10"
+dynamic = ["dependencies"]
+
+[tool.setuptools]
+packages = ["fess38.utils"]
+package-dir = { "fess38.utils" = "src" }
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }

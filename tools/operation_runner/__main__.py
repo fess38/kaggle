@@ -5,8 +5,8 @@ from typing import Annotated, Union
 import hydra
 import pydantic
 from fess38.data_processing.operations import operation_library
-from fess38.data_processing.operations.filters.chain import *
-from fess38.data_processing.operations.merge import *
+from fess38.data_processing.operations.filters.chain import *  # noqa: F401 F403
+from fess38.data_processing.operations.merge import *  # noqa: F401 F403
 from fess38.utils.config import ConfigBase
 from omegaconf import DictConfig
 
@@ -37,7 +37,7 @@ def main(cfg: DictConfig):
         class_ = getattr(importlib.import_module(module_name), class_name)
         logger.info(f"Start executing {class_name} operation")
         class_(config).run()
-        logger.info(f"Finished executing operation")
+        logger.info("Finished executing operation")
 
 
 if __name__ == "__main__":

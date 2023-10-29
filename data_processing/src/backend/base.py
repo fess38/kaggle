@@ -2,7 +2,11 @@ import abc
 import logging
 from typing import Sequence
 
-from ..operations.config import CreateTransformConfigBase, MapReduceTransformConfigBase, MapTransformConfigBase
+from ..operations.config import (
+    CreateTransformConfigBase,
+    MapReduceTransformConfigBase,
+    MapTransformConfigBase,
+)
 from ..operations.protocol import CreateFn, MapFn, MapReduceMapFn, MapReduceReduceFn
 
 logger = logging.getLogger(__name__)

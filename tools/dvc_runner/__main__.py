@@ -81,7 +81,7 @@ def main(config: DictConfig):
     prepare_dvc_configs(config)
     if not Path(".dvc").exists():
         subprocess.check_call("dvc init --subdir", shell=True)
-    subprocess.check_call(f"dvc exp run", shell=True)
+    subprocess.check_call("dvc exp run", shell=True)
 
 
 if __name__ == "__main__":

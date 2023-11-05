@@ -1,6 +1,6 @@
 [project]
 name = "fess38.data_processing"
-version = "2023.10.22"
+version = "2023.11.05"
 requires-python = ">=3.10"
 dynamic = ["dependencies"]
 

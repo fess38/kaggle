@@ -3,8 +3,10 @@ from collections.abc import Iterable, Iterator
 from typing import IO, Annotated, Any, Literal
 
 import pandas as pd
+import pyarrow
 import pydantic
 from fess38.util.config import ConfigBase
+from pyarrow import csv
 
 
 class RecordFormatterBase(ConfigBase, abc.ABC):
@@ -19,15 +21,50 @@ class RecordFormatterBase(ConfigBase, abc.ABC):
 
 class TextRecordFormatter(RecordFormatterBase):
     type: Literal["text"] = "text"
+    default_key: str = "data"
 
     def read(self, f: IO) -> Iterator[dict[str, str]]:
         for line in f:
-            yield {"value": line.rstrip("\n")}
+            yield {self.default_key: line.rstrip("\n")}
 
     def write(self, f: IO, records: Iterable[dict[str, str]]):
         for record in records:
-            f.write(record["value"])
+            f.write(record[self.default_key])
             f.write("\n")
+
+
+class CsvRecordFormatter(RecordFormatterBase):
+    type: Literal["csv"] = "csv"
+    skip_rows: int = 0
+    column_names: list[str] = None
+    delimiter: str = ","
+    quote_char: str = '"'
+    strings_can_be_null: bool = True
+    include_columns: list[str] = None
+
+    def read(self, f: IO) -> Iterator[dict[str, Any]]:
+        yield from csv.read_csv(
+            f,
+            read_options=csv.ReadOptions(
+                skip_rows=self.skip_rows,
+                column_names=self.column_names,
+            ),
+            parse_options=csv.ParseOptions(
+                delimiter=self.delimiter,
+                quote_char=self.quote_char,
+            ),
+            convert_options=csv.ConvertOptions(
+                strings_can_be_null=True,
+                include_columns=self.include_columns,
+            ),
+        ).to_pylist()
+
+    def write(self, f: IO, records: Iterable[dict[str, Any]]):
+        csv.write_csv(
+            pyarrow.Table.from_pylist(records),
+            f,
+            write_options=csv.WriteOptions(delimeter=self.delimiter),
+        )
 
 
 class ParquetRecordFormatter(RecordFormatterBase):
@@ -46,6 +83,6 @@ class ParquetRecordFormatter(RecordFormatterBase):
 
 
 RecordFormatter = Annotated[
-    (TextRecordFormatter | ParquetRecordFormatter),
+    (CsvRecordFormatter | ParquetRecordFormatter | TextRecordFormatter),
     pydantic.Field(discriminator="type"),
 ]

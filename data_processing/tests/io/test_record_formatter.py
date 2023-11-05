@@ -8,10 +8,10 @@ def test_csv_record_formatter_default(tmp_path: Path):
     with csv_file.open("wt") as f:
         f.write("a,b\n1,c\n2,d")
 
-    lines = list(CsvRecordFormatter().read(csv_file))
+    lines = list(CsvRecordFormatter(column_renames={"a": "z"}).read(csv_file))
     assert len(lines) == 2
-    assert lines[0] == {"a": 1, "b": "c"}
-    assert lines[1] == {"a": 2, "b": "d"}
+    assert lines[0] == {"z": 1, "b": "c"}
+    assert lines[1] == {"z": 2, "b": "d"}
 
 
 def test_csv_record_formatter_custom(tmp_path: Path):

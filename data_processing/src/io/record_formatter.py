@@ -10,6 +10,8 @@ from pyarrow import csv
 
 
 class RecordFormatterBase(ConfigBase, abc.ABC):
+    column_renames: dict[str, str] = None
+
     @abc.abstractmethod
     def read(self, f: IO) -> Iterator[Any]:
         ...
@@ -17,6 +19,13 @@ class RecordFormatterBase(ConfigBase, abc.ABC):
     @abc.abstractmethod
     def write(self, f: IO, records: Iterable[Any]):
         ...
+
+    def _rename_columns(self, record: dict[str, Any]):
+        if self.column_renames:
+            for old_key, new_key in self.column_renames.items():
+                record[new_key] = record.pop(old_key, None)
+
+        return record
 
 
 class TextRecordFormatter(RecordFormatterBase):
@@ -43,7 +52,7 @@ class CsvRecordFormatter(RecordFormatterBase):
     include_columns: list[str] = None
 
     def read(self, f: IO) -> Iterator[dict[str, Any]]:
-        yield from csv.read_csv(
+        records_iterator = csv.read_csv(
             f,
             read_options=csv.ReadOptions(
                 skip_rows=self.skip_rows,
@@ -58,6 +67,7 @@ class CsvRecordFormatter(RecordFormatterBase):
                 include_columns=self.include_columns,
             ),
         ).to_pylist()
+        yield from (self._rename_columns(record) for record in records_iterator)
 
     def write(self, f: IO, records: Iterable[dict[str, Any]]):
         csv.write_csv(

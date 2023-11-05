@@ -9,10 +9,10 @@ def normalize_path(path: PyTreePath) -> PyTreePath:
 
 def format_path(path: PyTreePath) -> str:
     path = normalize_path(path)
-    return "->".join([f"'{field}'" for field in path])
+    return "=>".join([f"'{field}'" for field in path])
 
 
-def get_field_by_path(path: PyTreePath, tree: Any) -> Any:
+def get_field_by_path(tree: Any, path: PyTreePath) -> Any:
     path = normalize_path(path)
 
     for i in range(len(path)):

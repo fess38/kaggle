@@ -2,7 +2,7 @@ import abc
 from collections.abc import Iterator
 from typing import Any
 
-from fess38.utils.filesystem import fs_for_path
+from fess38.util.filesystem import fs_for_path
 
 from .common import FileDatasetIOMixin
 from .dataset_reference import FileInputDatasetReference, InputDatasetReference

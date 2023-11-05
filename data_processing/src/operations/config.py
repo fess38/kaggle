@@ -1,4 +1,4 @@
-from fess38.utils.config import ConfigBase
+from fess38.util.config import ConfigBase
 
 from ..backend.config import BackendConfig, LocalBackendConfig
 from ..io.dataset_reference import InputDatasetReference, OutputDatasetReference

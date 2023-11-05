@@ -4,7 +4,7 @@ from typing import IO, Annotated, Any, Literal
 
 import pandas as pd
 import pydantic
-from fess38.utils.config import ConfigBase
+from fess38.util.config import ConfigBase
 
 
 class RecordFormatterBase(ConfigBase, abc.ABC):

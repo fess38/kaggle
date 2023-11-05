@@ -1,7 +1,7 @@
 from typing import Any, Literal
 from urllib.parse import urlparse
 
-from fess38.utils.pytree import PyTreePath, format_path, get_field_by_path
+from fess38.util.pytree import PyTreePath, format_path, get_field_by_path
 
 from . import filter_library
 from .base import FilterConfigBase

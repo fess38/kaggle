@@ -11,7 +11,10 @@ class Registry:
     def __call__(self, key: str) -> Callable[[Any], Any]:
         def _wrapper(what: Any) -> Any:
             if key in self._mapping:
-                raise ValueError(f'Name "{key}" is already registered ' f"in registry {self._name}.")
+                raise ValueError(f"Name '{key}' is already registered in registry {self._name}.")
+
+            if what in self._inverse_mapping:
+                raise ValueError(f"Value '{what}' is already registered in registry {self._name}.")
 
             self._mapping[key] = what
             self._inverse_mapping[what] = key
@@ -19,6 +22,9 @@ class Registry:
             return what
 
         return _wrapper
+
+    def __contains__(self, key: str) -> bool:
+        return key in self._mapping
 
     def __getitem__(self, item: str | tuple[str, bool]) -> Any:
         key_or_value, inverse = item if isinstance(item, tuple) else (item, False)
@@ -28,7 +34,7 @@ class Registry:
         return self._mapping.keys()
 
     def values(self) -> Iterable[Any]:
-        return self._mapping.values()
+        return self._inverse_mapping.keys()
 
     def _get_by_key(self, key: str) -> Any:
         if key not in self._mapping:

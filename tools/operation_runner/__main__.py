@@ -7,7 +7,7 @@ import pydantic
 from fess38.data_processing.operations import operation_library
 from fess38.data_processing.operations.filters.chain import *  # noqa: F401 F403
 from fess38.data_processing.operations.merge import *  # noqa: F401 F403
-from fess38.utils.config import ConfigBase
+from fess38.util.config import ConfigBase
 from omegaconf import DictConfig
 
 logger = logging.getLogger(__name__)

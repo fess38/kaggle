@@ -1,7 +1,7 @@
 from typing import Annotated, Literal
 
 import pydantic
-from fess38.utils.config import ConfigBase
+from fess38.util.config import ConfigBase
 
 
 class BackendConfigBase(ConfigBase):

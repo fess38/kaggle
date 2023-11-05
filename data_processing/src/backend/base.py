@@ -14,7 +14,11 @@ logger = logging.getLogger(__name__)
 
 class BackendBase(abc.ABC):
     @abc.abstractmethod
-    def run_create(self, config: CreateTransformConfigBase, create_fns: Sequence[CreateFn]):
+    def run_create(
+        self,
+        config: CreateTransformConfigBase,
+        create_fns: Sequence[CreateFn],
+    ):
         ...
 
     @abc.abstractmethod

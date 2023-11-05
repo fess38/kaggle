@@ -52,7 +52,8 @@ def _expand_cmd(dvc_config: DictConfig):
 def _split_params_to_stages(params: DictConfig):
     for stage_name, command in params.items():
         with open(f"stages/{stage_name}.yaml", "wt") as f:
-            f.write(OmegaConf.to_yaml({"transforms": command if isinstance(command, list) else [command]}))
+            commands = command if isinstance(command, list) else [command]
+            f.write(OmegaConf.to_yaml({"transforms": commands}))
 
 
 def prepare_dvc_configs(config: Config):
@@ -62,7 +63,9 @@ def prepare_dvc_configs(config: Config):
         del params["vars"]
     _split_params_to_stages(params)
 
-    dvc_config = OmegaConf.to_container(OmegaConf.load(project_dir / config.dvc_config_path), resolve=False)
+    dvc_config = OmegaConf.to_container(
+        OmegaConf.load(project_dir / config.dvc_config_path), resolve=False
+    )
     _set_operation_runner(dvc_config, config.operation_runner_path)
     _expand_cmd(dvc_config)
     _expand_deps_outs(dvc_config, params)

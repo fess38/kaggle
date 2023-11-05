@@ -6,7 +6,11 @@ from .protocol import CreateFn
 
 
 class CreateTransformBase(TransformBase):
-    def __init__(self, config: CreateTransformConfigBase, create_fns: Sequence[CreateFn]):
+    def __init__(
+        self,
+        config: CreateTransformConfigBase,
+        create_fns: Sequence[CreateFn],
+    ):
         if len(config.inputs) != 0:
             raise ValueError("Create transform should have no inputs.")
 

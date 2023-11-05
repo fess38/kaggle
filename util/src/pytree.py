@@ -18,7 +18,9 @@ def get_field_by_path(tree: Any, path: PyTreePath) -> Any:
     for i in range(len(path)):
         field = path[i]
         if field not in tree:
-            raise ValueError(f"Path {format_path(path[:i + 1])} not found in the tree {tree}.")
+            raise ValueError(
+                f"Path {format_path(path[:i + 1])} not found in the tree {tree}."
+            )
         tree = tree[field]
 
     return tree

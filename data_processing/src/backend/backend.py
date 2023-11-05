@@ -1,5 +1,5 @@
-from .config import BackendConfig, LocalBackendConfig
 from .base import BackendBase
+from .config import BackendConfig, LocalBackendConfig
 from .local_backend import LocalBackend
 
 

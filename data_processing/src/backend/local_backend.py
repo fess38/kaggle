@@ -24,7 +24,11 @@ class LocalBackend(BackendBase):
     def __init__(self, config: LocalBackendConfig):
         self._config = config
 
-    def run_create(self, config: CreateTransformConfigBase, create_fns: Sequence[CreateFn]):
+    def run_create(
+        self,
+        config: CreateTransformConfigBase,
+        create_fns: Sequence[CreateFn],
+    ):
         logger.info(
             f"Running create operation {config.name or type(config)} using local backend "
             f"with {len(config.outputs)} outputs and "

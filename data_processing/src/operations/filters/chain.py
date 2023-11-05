@@ -14,7 +14,9 @@ class FilterFn(Protocol):
         ...
 
 
-@operation_library("fess38.data_processing.operations.filters.chain.FilterChainTransform")
+@operation_library(
+    "fess38.data_processing.operations.filters.chain.FilterChainTransform"
+)
 class FilterChainTransformConfig(MapTransformConfigBase):
     type: Literal["filter_chain"] = "filter_chain"
     filters: list[FilterConfig]
@@ -31,7 +33,9 @@ class FilterChainTransform(MapTransformBase):
         filter_fns: list[FilterFn] = []
         for filter_config in config.filters:
             filter_fn = filter_library[filter_config.type]
-            filter_kwargs = filter_config.model_dump(exclude={"vars", "type", "record_dropped_to_role"})
+            filter_kwargs = filter_config.model_dump(
+                exclude={"vars", "type", "record_dropped_to_role"}
+            )
             filter_fns.append(functools.partial(filter_fn, **filter_kwargs))
 
         def _map_fn(

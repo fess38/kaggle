@@ -23,7 +23,9 @@ class FileDatasetWriter(DatasetWriterBase, FileDatasetIOMixin):
         self._dataset_reference = dataset_reference
         fs = fs_for_path(self.data_path)
         if not dataset_reference.allow_overwrite and fs.exists(self.data_path):
-            raise ValueError(f"Output dataset {self.data_path} already exists and overwriting is disabled.")
+            raise ValueError(
+                f"Output dataset {self.data_path} already exists and overwriting is disabled."
+            )
 
         fs.makedirs(Path(self.data_path).parent, exist_ok=True)
         self._file = fs.open(self.data_path, mode=dataset_reference.mode)
@@ -42,8 +44,12 @@ class FileDatasetWriter(DatasetWriterBase, FileDatasetIOMixin):
         return self._dataset_reference
 
 
-def create_dataset_writer(dataset_reference: OutputDatasetReference) -> DatasetWriterBase:
+def create_dataset_writer(
+    dataset_reference: OutputDatasetReference,
+) -> DatasetWriterBase:
     if isinstance(dataset_reference, FileOutputDatasetReference):
         return FileDatasetWriter(dataset_reference)
 
-    raise ValueError(f"Unrecognized dataset reference type {type(dataset_reference).__name__}.")
+    raise ValueError(
+        f"Unrecognized dataset reference type {type(dataset_reference).__name__}."
+    )

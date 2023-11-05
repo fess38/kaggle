@@ -36,8 +36,12 @@ class FileDatasetReader(DatasetReaderBase, FileDatasetIOMixin):
         return self._dataset_reference
 
 
-def create_dataset_reader(dataset_reference: InputDatasetReference) -> DatasetReaderBase:
+def create_dataset_reader(
+    dataset_reference: InputDatasetReference,
+) -> DatasetReaderBase:
     if isinstance(dataset_reference, FileInputDatasetReference):
         return FileDatasetReader(dataset_reference)
 
-    raise ValueError(f"Unrecognized dataset reference type {type(dataset_reference).__name__}.")
+    raise ValueError(
+        f"Unrecognized dataset reference type {type(dataset_reference).__name__}."
+    )

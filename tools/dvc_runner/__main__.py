@@ -18,9 +18,13 @@ class Config:
     operation_runner_path: str
 
 
-def _set_operation_runner(dvc_config: DictConfig, operation_runner_path: str):
-    command = f"python {hydra.utils.get_original_cwd()}/{operation_runner_path} ++hydra.run.dir=."
-    dvc_config["vars"].append({"operation_runner": command})
+def set_dvc_ignore():
+    with open(".dvcignore", "ta") as f:
+        f.write("./tmp\n")
+
+
+def _stage_config_path(stage_name: str) -> str:
+    return f"stages/{stage_name}.yaml"
 
 
 def _expand_deps_outs(dvc_config: DictConfig, params: DictConfig):
@@ -30,12 +34,15 @@ def _expand_deps_outs(dvc_config: DictConfig, params: DictConfig):
 
         if "deps" not in stage:
             stage["deps"] = []
-        for input in params[stage_name]["inputs"]:
+
+        stage["deps"].append(_stage_config_path(stage_name))
+
+        for input in params[stage_name].get("inputs", []):
             stage["deps"].append(input["path"])
 
         if "outs" not in stage:
             stage["outs"] = []
-        for output in params[stage_name]["outputs"]:
+        for output in params[stage_name].get("outputs", []):
             stage["outs"].append(output["path"])
 
 
@@ -46,14 +53,20 @@ def _expand_cmd(dvc_config: DictConfig):
 
         for i in range(len(stage["cmd"])):
             if "${operation_runner}" in stage["cmd"][i]:
-                stage["cmd"][i] += f" ++config_path=stages/{stage_name}.yaml"
+                stage["cmd"][i] += f" ++config_path={_stage_config_path(stage_name)}"
+
+
+def _set_operation_runner(dvc_config: DictConfig, operation_runner_path: str):
+    command = f"python {hydra.utils.get_original_cwd()}/{operation_runner_path} ++hydra.run.dir=."
+    dvc_config["vars"].append({"operation_runner": command})
 
 
 def _split_params_to_stages(params: DictConfig):
+    os.makedirs("stages", exist_ok=True)
     for stage_name, command in params.items():
-        with open(f"stages/{stage_name}.yaml", "wt") as f:
+        with open(_stage_config_path(stage_name), "wt") as f:
             commands = command if isinstance(command, list) else [command]
-            f.write(OmegaConf.to_yaml({"transforms": commands}))
+            f.write(OmegaConf.to_yaml({"ops": commands}))
 
 
 def prepare_dvc_configs(config: Config):
@@ -84,6 +97,7 @@ def main(config: DictConfig):
     prepare_dvc_configs(config)
     if not Path(".dvc").exists():
         subprocess.check_call("dvc init --subdir", shell=True)
+        set_dvc_ignore()
     subprocess.check_call("dvc exp run", shell=True)
 
 

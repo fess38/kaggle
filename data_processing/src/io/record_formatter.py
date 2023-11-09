@@ -73,7 +73,7 @@ class CsvRecordFormatter(RecordFormatterBase):
         csv.write_csv(
             pyarrow.Table.from_pylist(records),
             f,
-            write_options=csv.WriteOptions(delimeter=self.delimiter),
+            write_options=csv.WriteOptions(delimiter=self.delimiter),
         )
 
 

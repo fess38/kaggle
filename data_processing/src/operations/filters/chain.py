@@ -3,7 +3,7 @@ from typing import Any, Literal, Protocol
 
 from ...io.record import OutputIterable, OutputRecord
 from .. import operation_library
-from ..map import MapTransformBase, MapTransformConfigBase
+from ..map import MapOpBase, MapOpConfigBase
 from ..protocol import MapFn
 from . import filter_library
 from .config import FilterConfig
@@ -14,22 +14,20 @@ class FilterFn(Protocol):
         ...
 
 
-@operation_library(
-    "fess38.data_processing.operations.filters.chain.FilterChainTransform"
-)
-class FilterChainTransformConfig(MapTransformConfigBase):
+@operation_library("fess38.data_processing.operations.filters.chain.FilterChainOp")
+class FilterChainOpConfig(MapOpConfigBase):
     type: Literal["filter_chain"] = "filter_chain"
     filters: list[FilterConfig]
 
 
-class FilterChainTransform(MapTransformBase):
-    def __init__(self, config: FilterChainTransformConfig):
+class FilterChainOp(MapOpBase):
+    def __init__(self, config: FilterChainOpConfig):
         super().__init__(
             config=config,
             map_fn=self._create_map_fn(config),
         )
 
-    def _create_map_fn(self, config: FilterChainTransformConfig) -> MapFn:
+    def _create_map_fn(self, config: FilterChainOpConfig) -> MapFn:
         filter_fns: list[FilterFn] = []
         for filter_config in config.filters:
             filter_fn = filter_library[filter_config.type]
@@ -38,10 +36,7 @@ class FilterChainTransform(MapTransformBase):
             )
             filter_fns.append(functools.partial(filter_fn, **filter_kwargs))
 
-        def _map_fn(
-            record: Any,
-            role: str | None,
-        ) -> OutputIterable:
+        def _map_fn(record: Any, role: str | None) -> OutputIterable:
             should_keep = True
             drop_to_role = None
             for filter_config, filter_fn in zip(config.filters, filter_fns):

@@ -1,12 +1,12 @@
-from .base import TransformBase
-from .config import MapReduceTransformConfigBase
+from .base import OpBase
+from .config import MapReduceOpConfigBase
 from .protocol import MapReduceMapFn, MapReduceReduceFn
 
 
-class MapReduceTransformBase(TransformBase):
+class MapReduceOpBase(OpBase):
     def __init__(
         self,
-        config: MapReduceTransformConfigBase,
+        config: MapReduceOpConfigBase,
         map_fn: MapReduceMapFn,
         reduce_fn: MapReduceReduceFn,
     ):

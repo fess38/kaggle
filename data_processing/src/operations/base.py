@@ -2,16 +2,16 @@ import abc
 
 from ..backend.backend import create_backend
 from ..backend.config import BackendConfig
-from .config import TransformConfigBase
+from .config import OpConfigBase
 
 
-class TransformBase(abc.ABC):
-    def __init__(self, config: TransformConfigBase):
+class OpBase(abc.ABC):
+    def __init__(self, config: OpConfigBase):
         self._config = config
         self._backend = create_backend(self.config.backend)
 
     @property
-    def config(self) -> TransformConfigBase:
+    def config(self) -> OpConfigBase:
         return self._config
 
     @property

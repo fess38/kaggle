@@ -1,18 +1,18 @@
 from collections.abc import Sequence
 
-from .base import TransformBase
-from .config import CreateTransformConfigBase
-from .protocol import CreateFn
+from ..base import OpBase
+from ..config import CreateOpConfigBase
+from ..protocol import CreateFn
 
 
-class CreateTransformBase(TransformBase):
+class CreateOpBase(OpBase):
     def __init__(
         self,
-        config: CreateTransformConfigBase,
+        config: CreateOpConfigBase,
         create_fns: Sequence[CreateFn],
     ):
         if len(config.inputs) != 0:
-            raise ValueError("Create transform should have no inputs.")
+            raise ValueError("Create op should have no inputs.")
 
         super().__init__(config)
         self._create_fns = create_fns

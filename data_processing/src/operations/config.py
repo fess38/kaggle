@@ -4,20 +4,20 @@ from ..backend.config import BackendConfig, LocalBackendConfig
 from ..io.dataset_reference import InputDatasetReference, OutputDatasetReference
 
 
-class TransformConfigBase(ConfigBase):
+class OpConfigBase(ConfigBase):
     name: str | None = None
     backend: BackendConfig = LocalBackendConfig()
     inputs: tuple[InputDatasetReference, ...] = ()
     outputs: tuple[OutputDatasetReference, ...] = ()
 
 
-class CreateTransformConfigBase(TransformConfigBase):
+class CreateOpConfigBase(OpConfigBase):
     ...
 
 
-class MapTransformConfigBase(TransformConfigBase):
+class MapOpConfigBase(OpConfigBase):
     ...
 
 
-class MapReduceTransformConfigBase(TransformConfigBase):
+class MapReduceOpConfigBase(OpConfigBase):
     ...

@@ -1,10 +1,10 @@
-from .base import TransformBase
-from .config import MapTransformConfigBase
+from .base import OpBase
+from .config import MapOpConfigBase
 from .protocol import MapFn
 
 
-class MapTransformBase(TransformBase):
-    def __init__(self, config: MapTransformConfigBase, map_fn: MapFn):
+class MapOpBase(OpBase):
+    def __init__(self, config: MapOpConfigBase, map_fn: MapFn):
         super().__init__(config)
         self._map_fn = map_fn
 

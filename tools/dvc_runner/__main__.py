@@ -18,9 +18,12 @@ class Config:
     operation_runner_path: str
 
 
-def set_dvc_ignore():
-    with open(".dvcignore", "ta") as f:
-        f.write("./tmp\n")
+def set_gitignore():
+    with open(".gitignore", "wt") as f:
+        f.write(".hydra/\n")
+        f.write("data/\n")
+        f.write("stages/\n")
+        f.write("tmp/\n")
 
 
 def _stage_config_path(stage_name: str) -> str:
@@ -97,7 +100,7 @@ def main(config: DictConfig):
     prepare_dvc_configs(config)
     if not Path(".dvc").exists():
         subprocess.check_call("dvc init --subdir", shell=True)
-        set_dvc_ignore()
+        set_gitignore()
     subprocess.check_call("dvc exp run", shell=True)
 
 

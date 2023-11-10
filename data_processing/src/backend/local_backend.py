@@ -30,9 +30,8 @@ class LocalBackend(BackendBase):
         create_fns: Sequence[CreateFn],
     ):
         logger.info(
-            f"Running create operation {config.name or type(config)} using local backend "
-            f"with {len(config.outputs)} outputs and "
-            f"{len(create_fns)} shards."
+            f"Running create operation {config.name or type(config)} using local"
+            f" backend with {len(config.outputs)} outputs and {len(create_fns)} shards."
         )
 
         writers = self._create_writers(config)
@@ -46,9 +45,8 @@ class LocalBackend(BackendBase):
 
     def run_map(self, config: MapOpConfigBase, map_fn: MapFn):
         logger.info(
-            f"Running map operation {config.name or type(config)} using local backend with "
-            f"{len(config.inputs)} inputs and "
-            f"{len(config.outputs)} outputs."
+            f"Running map operation {config.name or type(config)} using local backend"
+            f" with {len(config.inputs)} inputs and {len(config.outputs)} outputs."
         )
 
         readers = self._create_readers(config)
@@ -72,9 +70,9 @@ class LocalBackend(BackendBase):
         reduce_fn: MapReduceReduceFn,
     ):
         logger.info(
-            f"Running map-reduce operation {config.name or type(config)} using local backend "
-            f"with {len(config.inputs)} inputs and "
-            f"{len(config.outputs)} outputs."
+            f"Running map-reduce operation {config.name or type(config)} using local"
+            f" backend with {len(config.inputs)} inputs and {len(config.outputs)}"
+            " outputs."
         )
 
         readers = self._create_readers(config)

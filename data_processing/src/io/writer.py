@@ -24,7 +24,8 @@ class FileDatasetWriter(DatasetWriterBase, FileDatasetIOMixin):
         fs = fs_for_path(self.data_path)
         if not dataset_reference.allow_overwrite and fs.exists(self.data_path):
             raise ValueError(
-                f"Output dataset {self.data_path} already exists and overwriting is disabled."
+                f"Output dataset {self.data_path} already exists and overwriting is"
+                " disabled."
             )
 
         fs.makedirs(Path(self.data_path).parent, exist_ok=True)

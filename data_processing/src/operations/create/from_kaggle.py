@@ -24,7 +24,8 @@ class CreateFromKaggleOp(CreateOpBase):
 
             for file_name, dataset_reference in config.file_infos.items():
                 logger.info(
-                    f"Start downloading file '{file_name}' to '{dataset_reference.path}'"
+                    f"Start downloading file '{file_name}' to"
+                    f" '{dataset_reference.path}'"
                 )
                 dir = Path(dataset_reference.path).parent
                 api.competition_download_file(

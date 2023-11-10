@@ -41,7 +41,7 @@ jobs:
           cache: 'pip'
       - name: Install dependencies
         run: |
-          sudo ln -s . /usr/local/lib/kaggle
+          sudo ln -s $(pwd) /usr/local/lib/kaggle
           python -m pip install --upgrade pip
           pip install --no-cache-dir -r requirements_dev.txt
           pip install --no-cache-dir -r requirements.txt

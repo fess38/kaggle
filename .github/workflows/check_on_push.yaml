@@ -42,15 +42,12 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install --no-cache-dir -r requirements.txt -f https://download.pytorch.org/whl/torch_stable.html
-          pip install --no-cache-dir ytsaurus-yson==0.4.3 'evals @ git+https://github.com/openai/evals.git@bd3b4d0afa7785f0374c46c32a32dd4c55105c28'
-          pip install --no-cache-dir trafilatura==1.6.2
-      - name: Set PYTHONPATH
-        run: |
-          echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+          ln -s . /usr/local/lib/kaggle
+          pip install --no-cache-dir -r requirements_dev.txt
+          pip install --no-cache-dir -r requirements.txt
       - name: Run pytest
         run: |
-          pytest tests
+          pytest .
       - name: Run isort
         run: |
           isort --check-only --diff --profile black .

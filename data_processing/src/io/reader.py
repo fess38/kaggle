@@ -22,7 +22,10 @@ class FileDatasetReader(DatasetReaderBase, FileDatasetIOMixin):
     def __init__(self, dataset_reference: FileInputDatasetReference):
         self._dataset_reference = dataset_reference
         fs = fs_for_path(self.data_path)
-        self._data_file = fs.open(self.data_path, mode=dataset_reference.mode)
+        self._data_file = fs.open(
+            self.data_path,
+            mode=dataset_reference.record_formatter.read_mode,
+        )
 
     def __iter__(self) -> Iterator[Any]:
         self._data_file.seek(0)

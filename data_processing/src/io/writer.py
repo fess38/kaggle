@@ -29,7 +29,10 @@ class FileDatasetWriter(DatasetWriterBase, FileDatasetIOMixin):
             )
 
         fs.makedirs(Path(self.data_path).parent, exist_ok=True)
-        self._file = fs.open(self.data_path, mode=dataset_reference.mode)
+        self._file = fs.open(
+            self.data_path,
+            mode=dataset_reference.record_formatter.write_mode,
+        )
         self._records = []
 
     def write(self, record: Any):

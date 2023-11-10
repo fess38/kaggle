@@ -21,14 +21,12 @@ class OutputDatasetReferenceBase(DatasetReferenceBase):
 class FileDatasetReferenceMixin(DatasetReferenceBase):
     type: Literal["file"] = "file"
     path: str
-    mode: str
 
 
 class FileInputDatasetReference(
     FileDatasetReferenceMixin,
     InputDatasetReferenceBase,
 ):
-    mode: str = "rb"
     record_formatter: RecordFormatter
 
 
@@ -36,7 +34,6 @@ class FileOutputDatasetReference(
     FileDatasetReferenceMixin,
     OutputDatasetReferenceBase,
 ):
-    mode: str = "wb"
     record_formatter: RecordFormatter
 
 

@@ -10,6 +10,8 @@ from pyarrow import csv
 
 
 class RecordFormatterBase(ConfigBase, abc.ABC):
+    read_mode: str = "rb"
+    write_mode: str = "wb"
     column_renames: dict[str, str] = None
 
     @abc.abstractmethod
@@ -30,6 +32,8 @@ class RecordFormatterBase(ConfigBase, abc.ABC):
 
 class TextRecordFormatter(RecordFormatterBase):
     type: Literal["text"] = "text"
+    read_mode: str = "rt"
+    write_mode: str = "wt"
     default_key: str = "data"
 
     def read(self, f: IO) -> Iterator[dict[str, str]]:
@@ -44,6 +48,8 @@ class TextRecordFormatter(RecordFormatterBase):
 
 class CsvRecordFormatter(RecordFormatterBase):
     type: Literal["csv"] = "csv"
+    read_mode: str = "rt"
+    write_mode: str = "wt"
     skip_rows: int = 0
     column_names: list[str] = None
     delimiter: str = ","

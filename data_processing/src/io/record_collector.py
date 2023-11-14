@@ -11,22 +11,23 @@ logger = logging.getLogger(__name__)
 class OutputRecordCollector:
     def __init__(
         self,
-        output_configs: Sequence[OutputDatasetReference],
+        outputs: Sequence[OutputDatasetReference],
         writers: Sequence[DatasetWriterBase],
     ):
-        if len(output_configs) != len(writers):
+        if len(outputs) != len(writers):
             raise ValueError(
-                f"Number of output configs ({len(output_configs)}) "
-                f"does not match number of writers ({len(writers)})."
+                f"Number of outputs ({len(outputs)}) does not match number of writers"
+                f" ({len(writers)})."
             )
 
+        self._outputs = outputs
         self._writers = writers
         self._role_to_writer: dict[str, DatasetWriterBase] = {}
-        for config, writer in zip(output_configs, writers):
-            if config.role is not None:
-                if config.role in self._role_to_writer:
-                    raise ValueError(f"Multiple writers found for role {config.role}.")
-                self._role_to_writer[config.role] = writer
+        for output, writer in zip(outputs, writers):
+            if output.role is not None:
+                if output.role in self._role_to_writer:
+                    raise ValueError(f"Multiple writers found for role {output.role}.")
+                self._role_to_writer[output.role] = writer
 
     def add(self, record: Any, index=None, role=None):
         if role is None:
@@ -39,6 +40,9 @@ class OutputRecordCollector:
     def add_at_index(self, record: Any, index: int):
         if index < 0 or index >= len(self._writers):
             raise ValueError(f"Invalid writer index: {index}")
+
+        if self._outputs[index].record_class is not None:
+            record = record.dict()
 
         self._writers[index].write(record)
 

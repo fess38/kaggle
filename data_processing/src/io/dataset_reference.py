@@ -7,6 +7,7 @@ from .record_formatter import RecordFormatter
 
 
 class DatasetReferenceBase(ConfigBase):
+    record_class: str | None = None
     role: str | None = None
 
 
@@ -21,20 +22,21 @@ class OutputDatasetReferenceBase(DatasetReferenceBase):
 class FileDatasetReferenceMixin(DatasetReferenceBase):
     type: Literal["file"] = "file"
     path: str
+    record_formatter: RecordFormatter
 
 
 class FileInputDatasetReference(
     FileDatasetReferenceMixin,
     InputDatasetReferenceBase,
 ):
-    record_formatter: RecordFormatter
+    ...
 
 
 class FileOutputDatasetReference(
     FileDatasetReferenceMixin,
     OutputDatasetReferenceBase,
 ):
-    record_formatter: RecordFormatter
+    ...
 
 
 InputDatasetReference = Annotated[

@@ -3,6 +3,7 @@ from collections import defaultdict
 from typing import Iterable, Sequence
 
 import tqdm
+from fess38.util.reflection import find_class
 
 from ..io.reader import DatasetReaderBase, create_dataset_reader
 from ..io.record_collector import OutputRecordCollector
@@ -52,12 +53,15 @@ class LocalBackend(BackendBase):
         readers = self._create_readers(config)
         writers = self._create_writers(config)
 
-        for input_ref, reader in zip(config.inputs, readers):
-            logger.info(f"Running map function on input <{input_ref}>.")
+        for input, reader in zip(config.inputs, readers):
+            logger.info(f"Running map function on input <{input}>.")
 
             output_collector = OutputRecordCollector(config.outputs, writers)
             for input_record in tqdm.tqdm(reader):
-                output_iterable = map_fn(input_record, input_ref.role)
+                if input.record_class is not None:
+                    record_class = find_class(input.record_class)
+                    input_record = record_class(**input_record)
+                output_iterable = map_fn(input_record, input.role)
                 output_collector.add_from_iterable(output_iterable)
 
         self._close_readers(readers)
@@ -78,18 +82,28 @@ class LocalBackend(BackendBase):
         readers = self._create_readers(config)
         writers = self._create_writers(config)
 
-        key_to_recs = defaultdict(list)
-        for input_ref, reader in zip(config.inputs, readers):
-            logger.info(f"Running map-reduce map function on input <{input_ref}>.")
+        key_to_records = defaultdict(list)
+        for input, reader in zip(config.inputs, readers):
+            logger.info(f"Running map-reduce map function on input <{input}>.")
             for input_record in tqdm.tqdm(reader):
-                key, recs = map_fn(input_record, input_ref.role)
-                for rec in recs:
-                    key_to_recs[key].append(rec)
+                if input.record_class is not None:
+                    record_class = find_class(input.record_class)
+                    input_record = record_class(**input_record)
+                key, records = map_fn(input_record, input.role)
+                for record in records:
+                    key_to_records[key].append(record)
 
         logger.info("Running map-reduce reduce function.")
         output_collector = OutputRecordCollector(config.outputs, writers)
-        for key, recs in tqdm.tqdm(key_to_recs.items()):
-            reduce_fn(key, recs, output_collector)
+        for key, records in tqdm.tqdm(key_to_records.items()):
+            records = (
+                field_value
+                for record in records
+                for field_name, field_value in record.__dict__
+                if field_name != "key" and field_value is not None
+            )
+            output_iterable = reduce_fn(key, records)
+            output_collector.add_from_iterable(output_iterable)
 
         self._close_readers(readers)
         self._close_writers(writers)

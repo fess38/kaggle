@@ -48,8 +48,6 @@ class TextRecordFormatter(RecordFormatterBase):
 
 class CsvRecordFormatter(RecordFormatterBase):
     type: Literal["csv"] = "csv"
-    read_mode: str = "rt"
-    write_mode: str = "wt"
     skip_rows: int = 0
     column_names: list[str] = None
     delimiter: str = ","

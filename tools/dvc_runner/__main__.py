@@ -60,8 +60,10 @@ def _expand_cmd(dvc_config: DictConfig):
 
 
 def _set_operation_runner(dvc_config: DictConfig, operation_runner_path: str):
-    command = f"python {hydra.utils.get_original_cwd()}/{operation_runner_path}"
-    " ++hydra.run.dir=."
+    command = (
+        f"python {hydra.utils.get_original_cwd()}/{operation_runner_path}"
+        " ++hydra.run.dir=."
+    )
     dvc_config["vars"].append({"operation_runner": command})
 
 

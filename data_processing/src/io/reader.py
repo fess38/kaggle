@@ -21,15 +21,13 @@ class DatasetReaderBase(abc.ABC):
 class FileDatasetReader(DatasetReaderBase, FileDatasetIOMixin):
     def __init__(self, dataset_reference: FileInputDatasetReference):
         self._dataset_reference = dataset_reference
+        self._validate_record_class()
         fs = fs_for_path(self.data_path)
-        self._data_file = fs.open(
-            self.data_path,
-            mode=dataset_reference.record_formatter.read_mode,
-        )
+        self._data_file = fs.open(self.data_path, mode=self.record_formatter.read_mode)
 
     def __iter__(self) -> Iterator[Any]:
         self._data_file.seek(0)
-        return self.dataset_reference.record_formatter.read(self._data_file)
+        return self.record_formatter.read(self._data_file)
 
     def close(self):
         self._data_file.close()

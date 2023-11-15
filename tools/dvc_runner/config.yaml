@@ -1,6 +1,5 @@
 project_dir: ???
-params_path: configs/params.yaml
-dvc_config_path: configs/dvc.yaml
+config_path: configs/config.yaml
 operation_runner_path: tools/operation_runner/__main__.py
 
 hydra:

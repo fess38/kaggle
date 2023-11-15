@@ -1,21 +1,12 @@
 import logging
 import os
 import subprocess
-from dataclasses import dataclass
 from pathlib import Path
 
 import hydra
 from omegaconf import DictConfig, OmegaConf
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class Config:
-    project_dir: str
-    params_path: str
-    dvc_config_path: str
-    operation_runner_path: str
 
 
 def set_gitignore():
@@ -26,71 +17,61 @@ def set_gitignore():
         f.write("tmp/\n")
 
 
-def _stage_config_path(stage_name: str) -> str:
-    return f"stages/{stage_name}.yaml"
+def _prepare_stage(
+    config: DictConfig,
+    stage_name: str,
+    operation: str | list[str],
+    operation_runner_command: str,
+) -> dict:
+    path = f"stages/{stage_name}.yaml"
+    with open(path, "wt") as f:
+        operations = operation if isinstance(operation, list) else [operation]
+        f.write(OmegaConf.to_yaml({"ops": operations}))
+
+    stage = {
+        "cmd": f"{operation_runner_command} ++config_path={path}",
+        "deps": [path],
+        "outs": [],
+    }
+    for input in config[stage_name].get("inputs", []):
+        stage["deps"].append(input["path"])
+    for output in config[stage_name].get("outputs", []):
+        stage["outs"].append(output["path"])
+
+    return stage
 
 
-def _expand_deps_outs(dvc_config: DictConfig, params: DictConfig):
-    for stage_name, stage in dvc_config["stages"].items():
-        if stage_name not in params:
-            continue
-
-        if "deps" not in stage:
-            stage["deps"] = []
-
-        stage["deps"].append(_stage_config_path(stage_name))
-
-        for input in params[stage_name].get("inputs", []):
-            stage["deps"].append(input["path"])
-
-        if "outs" not in stage:
-            stage["outs"] = []
-        for output in params[stage_name].get("outputs", []):
-            stage["outs"].append(output["path"])
-
-
-def _expand_cmd(dvc_config: DictConfig):
-    for stage_name, stage in dvc_config["stages"].items():
-        if isinstance(stage["cmd"], str):
-            stage["cmd"] = [stage["cmd"]]
-
-        for i in range(len(stage["cmd"])):
-            if "${operation_runner}" in stage["cmd"][i]:
-                stage["cmd"][i] += f" ++config_path={_stage_config_path(stage_name)}"
-
-
-def _set_operation_runner(dvc_config: DictConfig, operation_runner_path: str):
-    command = (
+def _prepare_stages(
+    dvc_config: dict,
+    config: DictConfig,
+    operation_runner_path: str,
+):
+    os.makedirs("stages", exist_ok=True)
+    dvc_config["stages"] = {}
+    operation_runner_command = (
         f"python {hydra.utils.get_original_cwd()}/{operation_runner_path}"
         " ++hydra.run.dir=."
     )
-    dvc_config["vars"].append({"operation_runner": command})
+    for stage_name, operation in config.items():
+        dvc_config["stages"][stage_name] = _prepare_stage(
+            config,
+            stage_name,
+            operation,
+            operation_runner_command,
+        )
 
 
-def _split_params_to_stages(params: DictConfig):
-    os.makedirs("stages", exist_ok=True)
-    for stage_name, command in params.items():
-        with open(_stage_config_path(stage_name), "wt") as f:
-            commands = command if isinstance(command, list) else [command]
-            f.write(OmegaConf.to_yaml({"ops": commands}))
+def prepare_dvc_configs(project_dir: str, config_path: str, operation_runner_path: str):
+    project_dir = Path(hydra.utils.get_original_cwd()) / project_dir
+    config = OmegaConf.to_object(OmegaConf.load(project_dir / config_path))
+    if "vars" in config:
+        del config["vars"]
 
-
-def prepare_dvc_configs(config: Config):
-    project_dir = Path(hydra.utils.get_original_cwd()) / config.project_dir
-    params = OmegaConf.to_object(OmegaConf.load(project_dir / config.params_path))
-    if "vars" in params:
-        del params["vars"]
-    _split_params_to_stages(params)
-
-    dvc_config = OmegaConf.to_container(
-        OmegaConf.load(project_dir / config.dvc_config_path), resolve=False
-    )
-    _set_operation_runner(dvc_config, config.operation_runner_path)
-    _expand_cmd(dvc_config)
-    _expand_deps_outs(dvc_config, params)
+    dvc_config = {}
+    _prepare_stages(dvc_config, config, operation_runner_path)
 
     with open("params.yaml", "wt") as f:
-        f.write(OmegaConf.to_yaml(params))
+        f.write(OmegaConf.to_yaml(config))
     with open("dvc.yaml", "wt") as f:
         f.write(OmegaConf.to_yaml(dvc_config))
 
@@ -99,8 +80,7 @@ def prepare_dvc_configs(config: Config):
 def main(config: DictConfig):
     logger.info(f"Starting dvc experiment in {os.getcwd()}")
 
-    config = Config(**config)
-    prepare_dvc_configs(config)
+    prepare_dvc_configs(**config)
     if not Path(".dvc").exists():
         subprocess.check_call("dvc init --subdir", shell=True)
         set_gitignore()

@@ -4,7 +4,7 @@ from ..io.record import OutputIterable
 
 
 class ConsumeFn(Protocol):
-    def __call__(self) -> None:
+    def __call__(self, record: Any, role: str | None) -> None:
         ...
 
 

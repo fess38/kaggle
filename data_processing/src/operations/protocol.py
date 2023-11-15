@@ -3,6 +3,11 @@ from typing import Any, Iterable, Protocol
 from ..io.record import OutputIterable
 
 
+class ConsumeFn(Protocol):
+    def __call__(self) -> None:
+        ...
+
+
 class ProduceFn(Protocol):
     def __call__(self) -> Iterable[Any]:
         ...

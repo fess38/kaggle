@@ -11,6 +11,10 @@ class OpConfigBase(ConfigBase):
     outputs: tuple[OutputDatasetReference, ...] = ()
 
 
+class ConsumeOpConfigBase(OpConfigBase):
+    ...
+
+
 class ProduceOpConfigBase(OpConfigBase):
     ...
 

@@ -9,12 +9,19 @@ from ..io.reader import DatasetReaderBase, create_dataset_reader
 from ..io.record_collector import OutputRecordCollector
 from ..io.writer import DatasetWriterBase, create_dataset_writer
 from ..operations.config import (
+    ConsumeOpConfigBase,
     MapOpConfigBase,
     MapReduceOpConfigBase,
     OpConfigBase,
     ProduceOpConfigBase,
 )
-from ..operations.protocol import MapFn, MapReduceMapFn, MapReduceReduceFn, ProduceFn
+from ..operations.protocol import (
+    ConsumeFn,
+    MapFn,
+    MapReduceMapFn,
+    MapReduceReduceFn,
+    ProduceFn,
+)
 from .base import BackendBase
 from .config import LocalBackendConfig
 
@@ -24,6 +31,28 @@ logger = logging.getLogger(__name__)
 class LocalBackend(BackendBase):
     def __init__(self, config: LocalBackendConfig):
         self._config = config
+
+    def run_consume(
+        self,
+        config: ConsumeOpConfigBase,
+        consume_fn: ConsumeFn,
+    ):
+        logger.info(
+            f"Running consume operation {config.name or type(config)} using local"
+            f" backend with {len(config.inputs)} inputs."
+        )
+
+        readers = self._create_readers(config)
+        for input, reader in zip(config.inputs, readers):
+            logger.info(f"Running consume function on input <{input}>.")
+
+            for input_record in tqdm.tqdm(reader):
+                if input.record_class is not None:
+                    record_class = find_class(input.record_class)
+                    input_record = record_class(**input_record)
+                consume_fn(input_record, input.role)
+
+        self._close_readers(readers)
 
     def run_produce(
         self,

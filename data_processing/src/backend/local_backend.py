@@ -9,12 +9,12 @@ from ..io.reader import DatasetReaderBase, create_dataset_reader
 from ..io.record_collector import OutputRecordCollector
 from ..io.writer import DatasetWriterBase, create_dataset_writer
 from ..operations.config import (
-    CreateOpConfigBase,
     MapOpConfigBase,
     MapReduceOpConfigBase,
     OpConfigBase,
+    ProduceOpConfigBase,
 )
-from ..operations.protocol import CreateFn, MapFn, MapReduceMapFn, MapReduceReduceFn
+from ..operations.protocol import MapFn, MapReduceMapFn, MapReduceReduceFn, ProduceFn
 from .base import BackendBase
 from .config import LocalBackendConfig
 
@@ -25,21 +25,22 @@ class LocalBackend(BackendBase):
     def __init__(self, config: LocalBackendConfig):
         self._config = config
 
-    def run_create(
+    def run_produce(
         self,
-        config: CreateOpConfigBase,
-        create_fns: Sequence[CreateFn],
+        config: ProduceOpConfigBase,
+        produce_fns: Sequence[ProduceFn],
     ):
         logger.info(
-            f"Running create operation {config.name or type(config)} using local"
-            f" backend with {len(config.outputs)} outputs and {len(create_fns)} shards."
+            f"Running produce operation {config.name or type(config)} using local"
+            f" backend with {len(config.outputs)} outputs and {len(produce_fns)}"
+            " shards."
         )
 
         writers = self._create_writers(config)
 
         output_collector = OutputRecordCollector(config.outputs, writers)
-        for create_fn in create_fns:
-            output_iterable = create_fn()
+        for produce_fn in produce_fns:
+            output_iterable = produce_fn()
             output_collector.add_from_iterable(output_iterable)
 
         self._close_writers(writers)

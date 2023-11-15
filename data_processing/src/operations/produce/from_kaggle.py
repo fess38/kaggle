@@ -6,19 +6,19 @@ from kaggle.api.kaggle_api_extended import KaggleApi
 from ...io.dataset_reference import FileInputDatasetReference
 from ...io.reader import create_dataset_reader
 from ...io.record import OutputIterable, OutputRecord
-from ..protocol import CreateFn
-from .base import CreateOpBase
-from .config import CreateFromKaggleOpConfig
+from ..protocol import ProduceFn
+from .base import ProduceOpBase
+from .config import ProduceFromKaggleOpConfig
 
 logger = logging.getLogger(__name__)
 
 
-class CreateFromKaggleOp(CreateOpBase):
-    def __init__(self, config: CreateFromKaggleOpConfig):
-        super().__init__(config, [self._make_create_fn(config)])
+class ProduceFromKaggleOp(ProduceOpBase):
+    def __init__(self, config: ProduceFromKaggleOpConfig):
+        super().__init__(config, [self._create_produce_fn(config)])
 
-    def _make_create_fn(self, config: CreateFromKaggleOpConfig) -> CreateFn:
-        def create_fn() -> OutputIterable:
+    def _create_produce_fn(self, config: ProduceFromKaggleOpConfig) -> ProduceFn:
+        def produce_fn() -> OutputIterable:
             api = KaggleApi()
             api.authenticate()
 
@@ -33,7 +33,7 @@ class CreateFromKaggleOp(CreateOpBase):
                 )
                 yield from self._process_file(file_name, dataset_reference)
 
-        return create_fn
+        return produce_fn
 
     def _process_file(
         self, file_name: str, dataset_reference: FileInputDatasetReference

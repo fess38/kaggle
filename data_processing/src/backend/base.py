@@ -3,21 +3,21 @@ import logging
 from typing import Sequence
 
 from ..operations.config import (
-    CreateOpConfigBase,
     MapOpConfigBase,
     MapReduceOpConfigBase,
+    ProduceOpConfigBase,
 )
-from ..operations.protocol import CreateFn, MapFn, MapReduceMapFn, MapReduceReduceFn
+from ..operations.protocol import MapFn, MapReduceMapFn, MapReduceReduceFn, ProduceFn
 
 logger = logging.getLogger(__name__)
 
 
 class BackendBase(abc.ABC):
     @abc.abstractmethod
-    def run_create(
+    def run_produce(
         self,
-        config: CreateOpConfigBase,
-        create_fns: Sequence[CreateFn],
+        config: ProduceOpConfigBase,
+        produce_fns: Sequence[ProduceFn],
     ):
         ...
 

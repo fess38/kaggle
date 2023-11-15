@@ -10,7 +10,7 @@ dynamic = ["dependencies"]
 "fess38.data_processing.io" = "src/io"
 "fess38.data_processing.operations" = "src/operations"
 "fess38.data_processing.operations.filters" = "src/operations/filters"
-"fess38.data_processing.operations.produce" = "src/operations/produce"
+"fess38.data_processing.operations.producer" = "src/operations/producer"
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }

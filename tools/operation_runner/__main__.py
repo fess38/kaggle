@@ -7,7 +7,7 @@ from fess38.competitions.titanic import *  # noqa: F401 F403
 from fess38.data_processing.operations import operation_library
 from fess38.data_processing.operations.filters.chain import *  # noqa: F401 F403
 from fess38.data_processing.operations.merge import *  # noqa: F401 F403
-from fess38.data_processing.operations.produce.from_kaggle import *  # noqa: F401 F403
+from fess38.data_processing.operations.producer.from_kaggle import *  # noqa: F401 F403
 from fess38.util.config import ConfigBase
 from fess38.util.reflection import find_class
 from omegaconf import DictConfig

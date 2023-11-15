@@ -6,7 +6,7 @@ from ..config import ProduceOpConfigBase
 
 
 @operation_library(
-    "fess38.data_processing.operations.produce.from_kaggle.ProduceFromKaggleOp"
+    "fess38.data_processing.operations.producer.from_kaggle.ProduceFromKaggleOp"
 )
 class ProduceFromKaggleOpConfig(ProduceOpConfigBase):
     type: Literal["produce_from_kaggle"] = "produce_from_kaggle"

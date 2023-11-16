@@ -7,6 +7,8 @@ from ..io.dataset_reference import InputDatasetReference, OutputDatasetReference
 class OpConfigBase(ConfigBase):
     name: str | None = None
     backend: BackendConfig = LocalBackendConfig()
+    input_files: dict[str, str] = {}
+    output_files: dict[str, str] = {}
     inputs: tuple[InputDatasetReference, ...] = ()
     outputs: tuple[OutputDatasetReference, ...] = ()
 

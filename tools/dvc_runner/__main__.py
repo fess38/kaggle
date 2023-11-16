@@ -33,10 +33,14 @@ def _prepare_stage(
         "deps": [path],
         "outs": [],
     }
-    for input in config[stage_name].get("inputs", []):
-        stage["deps"].append(input["path"])
-    for output in config[stage_name].get("outputs", []):
-        stage["outs"].append(output["path"])
+
+    for params, stage_param in [("input_files", "deps"), ("output_files", "outs")]:
+        for value in config[stage_name].get(params, {}).values():
+            stage[stage_param].append(value)
+
+    for params, stage_param in [("inputs", "deps"), ("outputs", "outs")]:
+        for value in config[stage_name].get(params, []):
+            stage[stage_param].append(value["path"])
 
     return stage
 

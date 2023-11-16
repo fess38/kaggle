@@ -4,7 +4,12 @@ from ..io.record import OutputIterable
 
 
 class ConsumeFn(Protocol):
-    def __call__(self, record: Any, role: str | None) -> None:
+    def __call__(self, record: Any, role: str | None):
+        ...
+
+
+class ConsumeAggregatorFn(Protocol):
+    def __call__(self, records: Iterable[Any], role: str | None) -> None:
         ...
 
 
@@ -18,11 +23,33 @@ class MapFn(Protocol):
         ...
 
 
+class MapAggregatorFn(Protocol):
+    def __call__(self, records: Iterable[Any], role: str | None) -> OutputIterable:
+        ...
+
+
 class MapReduceMapFn(Protocol):
     def __call__(self, record: Any, role: str | None) -> tuple[Any, Iterable[Any]]:
         ...
 
 
+class MapReduceMapAggregatorFn(Protocol):
+    def __call__(
+        self,
+        records: Iterable[Any],
+        role: str | None,
+    ) -> tuple[Any, Iterable[Any]]:
+        ...
+
+
 class MapReduceReduceFn(Protocol):
     def __call__(self, key: Any, records: Iterable[Any]) -> OutputIterable:
+        ...
+
+
+class MapReduceReduceAggregatorFn(Protocol):
+    def __call__(
+        self,
+        record_groups: Iterable[tuple[Any, Iterable[Any]]],
+    ) -> OutputIterable:
         ...

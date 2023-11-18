@@ -14,6 +14,7 @@ from ..operations.config import (
     MapReduceOpConfigBase,
     OpConfigBase,
     ProduceOpConfigBase,
+    RunOpConfigBase,
 )
 from ..operations.protocol import (
     ConsumeAggregatorFn,
@@ -25,6 +26,7 @@ from ..operations.protocol import (
     MapReduceReduceAggregatorFn,
     MapReduceReduceFn,
     ProduceFn,
+    RunFn,
 )
 from .base import BackendBase
 from .config import LocalBackendConfig
@@ -39,6 +41,17 @@ def _is_first_parameter_iterable(func: Callable) -> bool:
 class LocalBackend(BackendBase):
     def __init__(self, config: LocalBackendConfig):
         self._config = config
+
+    def run(
+        self,
+        config: RunOpConfigBase,
+        run_fn: RunFn,
+    ):
+        logger.info(
+            f"Running run operation {config.name or type(config)} using local backend"
+        )
+
+        run_fn()
 
     def run_consume(
         self,

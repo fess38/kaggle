@@ -7,6 +7,7 @@ from ..operations.config import (
     MapOpConfigBase,
     MapReduceOpConfigBase,
     ProduceOpConfigBase,
+    RunOpConfigBase,
 )
 from ..operations.protocol import (
     ConsumeFn,
@@ -14,12 +15,21 @@ from ..operations.protocol import (
     MapReduceMapFn,
     MapReduceReduceFn,
     ProduceFn,
+    RunFn,
 )
 
 logger = logging.getLogger(__name__)
 
 
 class BackendBase(abc.ABC):
+    @abc.abstractmethod
+    def run(
+        self,
+        config: RunOpConfigBase,
+        run_fn: RunFn,
+    ):
+        ...
+
     @abc.abstractmethod
     def run_consume(
         self,

@@ -8,16 +8,16 @@ from ...io.reader import create_dataset_reader
 from ...io.record import OutputIterable, OutputRecord
 from ..protocol import ProduceFn
 from .base import ProduceOpBase
-from .config import ProduceFromKaggleOpConfig
+from .config import FromKaggleProduceOpConfig
 
 logger = logging.getLogger(__name__)
 
 
-class ProduceFromKaggleOp(ProduceOpBase):
-    def __init__(self, config: ProduceFromKaggleOpConfig):
+class FromKaggleProduceOp(ProduceOpBase):
+    def __init__(self, config: FromKaggleProduceOpConfig):
         super().__init__(config, [self._create_produce_fn(config)])
 
-    def _create_produce_fn(self, config: ProduceFromKaggleOpConfig) -> ProduceFn:
+    def _create_produce_fn(self, config: FromKaggleProduceOpConfig) -> ProduceFn:
         def produce_fn() -> OutputIterable:
             api = KaggleApi()
             api.authenticate()

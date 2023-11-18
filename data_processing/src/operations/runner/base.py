@@ -3,7 +3,7 @@ from ..config import RunOpConfigBase
 from ..protocol import RunFn
 
 
-class ProduceOpBase(OpBase):
+class RunOpBase(OpBase):
     def __init__(
         self,
         config: RunOpConfigBase,

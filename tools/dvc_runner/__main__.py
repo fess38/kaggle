@@ -84,11 +84,16 @@ def prepare_dvc_configs(project_dir: str, config_path: str, operation_runner_pat
 def main(config: DictConfig):
     logger.info(f"Starting dvc experiment in {os.getcwd()}")
 
-    prepare_dvc_configs(**config)
+    prepare_dvc_configs(
+        config.project_dir,
+        config.config_path,
+        config.operation_runner_path,
+    )
+
     if not Path(".dvc").exists():
         subprocess.check_call("dvc init --subdir", shell=True)
         set_gitignore()
-    subprocess.check_call("dvc exp run", shell=True)
+    subprocess.check_call(f"{config.dvc_command} {config.dvc_args}", shell=True)
 
 
 if __name__ == "__main__":

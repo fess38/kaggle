@@ -5,6 +5,7 @@ import hydra
 import pydantic
 from fess38.competitions.examples import *  # noqa: F401 F403
 from fess38.data_processing.operation import operation_library
+from fess38.data_processing.operation.map_reducer import *  # noqa: F401 F403
 from fess38.data_processing.operation.mapper import *  # noqa: F401 F403
 from fess38.data_processing.operation.producer import *  # noqa: F401 F403
 from fess38.data_processing.operation.runner import *  # noqa: F401 F403

@@ -1,6 +1,6 @@
-from .base import OpBase
-from .config import MapReduceOpConfigBase
-from .protocol import MapReduceMapFn, MapReduceReduceFn
+from ..base import OpBase
+from ..config import MapReduceOpConfigBase
+from ..protocol import MapReduceMapFn, MapReduceReduceFn
 
 
 class MapReduceOpBase(OpBase):

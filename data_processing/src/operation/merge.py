@@ -5,7 +5,7 @@ from . import operation_library
 from .map import MapOpBase, MapOpConfigBase
 
 
-@operation_library("fess38.data_processing.operations.merge.MergeOp")
+@operation_library("fess38.data_processing.operation.merge.MergeOp")
 class MergeOpConfig(MapOpConfigBase):
     type: Literal["merge"] = "merge"
 

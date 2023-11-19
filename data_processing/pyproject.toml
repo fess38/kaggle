@@ -8,10 +8,10 @@ dynamic = ["dependencies"]
 "fess38.data_processing" = "src"
 "fess38.data_processing.backend" = "src/backend"
 "fess38.data_processing.io" = "src/io"
-"fess38.data_processing.operations" = "src/operations"
-"fess38.data_processing.operations.consumer" = "src/operations/consumer"
-"fess38.data_processing.operations.filters" = "src/operations/filters"
-"fess38.data_processing.operations.producer" = "src/operations/producer"
+"fess38.data_processing.operation" = "src/operation"
+"fess38.data_processing.operation.consumer" = "src/operation/consumer"
+"fess38.data_processing.operation.filters" = "src/operation/filters"
+"fess38.data_processing.operation.producer" = "src/operation/producer"
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }

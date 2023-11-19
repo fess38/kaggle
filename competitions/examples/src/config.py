@@ -1,7 +1,7 @@
 from typing import Literal
 
-from fess38.data_processing.operations import operation_library
-from fess38.data_processing.operations.config import ProduceOpConfigBase
+from fess38.data_processing.operation import operation_library
+from fess38.data_processing.operation.config import ProduceOpConfigBase
 
 
 @operation_library("fess38.competitions.examples.produce_random.RandomProduceOp")

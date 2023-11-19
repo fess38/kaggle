@@ -2,7 +2,7 @@ import random
 import uuid
 from typing import Iterable
 
-from fess38.data_processing.operations.producer.base import ProduceOpBase
+from fess38.data_processing.operation.producer.base import ProduceOpBase
 
 from .config import RandomProduceOpConfig
 

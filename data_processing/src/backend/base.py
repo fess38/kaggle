@@ -2,14 +2,14 @@ import abc
 import logging
 from typing import Sequence
 
-from ..operations.config import (
+from ..operation.config import (
     ConsumeOpConfigBase,
     MapOpConfigBase,
     MapReduceOpConfigBase,
     ProduceOpConfigBase,
     RunOpConfigBase,
 )
-from ..operations.protocol import (
+from ..operation.protocol import (
     ConsumeFn,
     MapFn,
     MapReduceMapFn,

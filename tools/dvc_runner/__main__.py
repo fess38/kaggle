@@ -20,13 +20,12 @@ def set_gitignore():
 def _prepare_stage(
     config: DictConfig,
     stage_name: str,
-    operation: str | list[str],
+    operation: str,
     operation_runner_command: str,
 ) -> dict:
     path = f"stages/{stage_name}.yaml"
     with open(path, "wt") as f:
-        operations = operation if isinstance(operation, list) else [operation]
-        f.write(OmegaConf.to_yaml({"ops": operations}))
+        f.write(OmegaConf.to_yaml({"ops": [operation]}))
 
     stage = {
         "cmd": f"{operation_runner_command} ++config_path={path}",

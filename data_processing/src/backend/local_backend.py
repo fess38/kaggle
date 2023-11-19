@@ -8,7 +8,7 @@ from fess38.util.reflection import find_class
 from ..io.reader import DatasetReaderBase, InputDatasetReference, create_dataset_reader
 from ..io.record_collector import OutputRecordCollector
 from ..io.writer import DatasetWriterBase, create_dataset_writer
-from ..operations.config import (
+from ..operation.config import (
     ConsumeOpConfigBase,
     MapOpConfigBase,
     MapReduceOpConfigBase,
@@ -16,7 +16,7 @@ from ..operations.config import (
     ProduceOpConfigBase,
     RunOpConfigBase,
 )
-from ..operations.protocol import (
+from ..operation.protocol import (
     ConsumeAggregatorFn,
     ConsumeFn,
     MapAggregatorFn,

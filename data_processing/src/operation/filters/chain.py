@@ -14,7 +14,7 @@ class FilterFn(Protocol):
         ...
 
 
-@operation_library("fess38.data_processing.operations.filters.chain.FilterChainOp")
+@operation_library("fess38.data_processing.operation.filters.chain.FilterChainOp")
 class FilterChainOpConfig(MapOpConfigBase):
     type: Literal["filter_chain"] = "filter_chain"
     filters: list[FilterConfig]

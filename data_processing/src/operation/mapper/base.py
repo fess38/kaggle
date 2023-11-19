@@ -1,6 +1,6 @@
-from .base import OpBase
-from .config import MapOpConfigBase
-from .protocol import MapFn
+from ..base import OpBase
+from ..config import MapOpConfigBase
+from ..protocol import MapFn
 
 
 class MapOpBase(OpBase):

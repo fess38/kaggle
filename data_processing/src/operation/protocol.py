@@ -33,6 +33,11 @@ class MapAggregatorFn(Protocol):
         ...
 
 
+class FilterFn(Protocol):
+    def __call__(self, record: Any, role: str | None, **kwargs) -> bool:
+        ...
+
+
 class MapReduceMapFn(Protocol):
     def __call__(self, record: Any, role: str | None) -> tuple[Any, Iterable[Any]]:
         ...

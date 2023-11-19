@@ -3,12 +3,11 @@ from typing import Annotated, Union
 
 import hydra
 import pydantic
-from fess38.competitions.examples.config import *  # noqa: F401 F403
+from fess38.competitions.examples import *  # noqa: F401 F403
 from fess38.data_processing.operation import operation_library
-from fess38.data_processing.operation.filters.chain import *  # noqa: F401 F403
-from fess38.data_processing.operation.merge import *  # noqa: F401 F403
-from fess38.data_processing.operation.producer.config import *  # noqa: F401 F403
-from fess38.data_processing.operation.runner.config import *  # noqa: F401 F403
+from fess38.data_processing.operation.mapper import *  # noqa: F401 F403
+from fess38.data_processing.operation.producer import *  # noqa: F401 F403
+from fess38.data_processing.operation.runner import *  # noqa: F401 F403
 from fess38.util.config import ConfigBase
 from fess38.util.reflection import find_class
 from omegaconf import DictConfig

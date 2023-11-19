@@ -16,4 +16,4 @@ def drop_empty(record: Any, path: PyTreePath) -> bool:
     field = get_field_by_path(path, record)
     if not isinstance(field, str):
         raise ValueError(f"Field {format_path(path)} is not a string.")
-    return field != ""
+    return field is not None and field != ""

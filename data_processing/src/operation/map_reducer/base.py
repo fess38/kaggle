@@ -1,14 +1,19 @@
 from ..base import OpBase
 from ..config import MapReduceOpConfigBase
-from ..protocol import MapReduceMapFn, MapReduceReduceFn
+from ..protocol import (
+    MapReduceMapAggregatorFn,
+    MapReduceMapFn,
+    MapReduceReduceAggregatorFn,
+    MapReduceReduceFn,
+)
 
 
 class MapReduceOpBase(OpBase):
     def __init__(
         self,
         config: MapReduceOpConfigBase,
-        map_fn: MapReduceMapFn,
-        reduce_fn: MapReduceReduceFn,
+        map_fn: MapReduceMapFn | MapReduceMapAggregatorFn,
+        reduce_fn: MapReduceReduceFn | MapReduceReduceAggregatorFn,
     ):
         if len(config.inputs) == 0:
             raise ValueError("MapReduce op should have inputs.")

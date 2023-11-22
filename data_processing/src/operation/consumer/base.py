@@ -1,13 +1,13 @@
 from ..base import OpBase
 from ..config import ConsumeOpConfigBase
-from ..protocol import ConsumeFn
+from ..protocol import ConsumeAggregatorFn, ConsumeFn
 
 
 class ConsumeOpBase(OpBase):
     def __init__(
         self,
         config: ConsumeOpConfigBase,
-        consume_fn: ConsumeFn,
+        consume_fn: ConsumeFn | ConsumeAggregatorFn,
     ):
         if len(config.inputs) == 0:
             raise ValueError("Consume op should have inputs.")

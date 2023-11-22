@@ -1,10 +1,10 @@
 from ..base import OpBase
 from ..config import MapOpConfigBase
-from ..protocol import MapFn
+from ..protocol import MapAggregatorFn, MapFn
 
 
 class MapOpBase(OpBase):
-    def __init__(self, config: MapOpConfigBase, map_fn: MapFn):
+    def __init__(self, config: MapOpConfigBase, map_fn: MapFn | MapAggregatorFn):
         if len(config.inputs) == 0:
             raise ValueError("Map op should have inputs.")
 

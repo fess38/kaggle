@@ -9,6 +9,7 @@ from fess38.data_processing.operation.map_reducer.config import *  # noqa: F401 
 from fess38.data_processing.operation.mapper.config import *  # noqa: F401 F403
 from fess38.data_processing.operation.producer.config import *  # noqa: F401 F403
 from fess38.data_processing.operation.runner.config import *  # noqa: F401 F403
+from fess38.training.config import *  # noqa: F401 F403
 from fess38.training.linear.config import *  # noqa: F401 F403
 from fess38.util.config import ConfigBase
 from fess38.util.reflection import find_class

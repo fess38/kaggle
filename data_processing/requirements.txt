@@ -1,2 +1,3 @@
 fess38.util @ file:///usr/local/lib/kaggle/util
 pyarrow==13.0.0
+ujson==5.8.0

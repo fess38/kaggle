@@ -9,6 +9,17 @@ produce_csv:
       record_formatter:
         type: csv
 
+produce_jsonl:
+  type: random_produce
+  row_count: 10000
+  col_count: 10
+  outputs:
+    - type: file
+      path: data/random.jsonl
+      allow_overwrite: true
+      record_formatter:
+        type: jsonl
+
 produce_parquet:
   type: random_produce
   row_count: 10000

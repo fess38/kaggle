@@ -16,3 +16,9 @@ class FilterChainMapOpConfig(MapOpConfigBase):
 @operation_library("fess38.data_processing.operation.mapper.merge.MergeMapOp")
 class MergeOpMapConfig(MapOpConfigBase):
     type: Literal["merge"] = "merge"
+
+
+@operation_library("fess38.data_processing.operation.mapper.shuffle.ShuffleMapOp")
+class ShuffleMapOpConfig(MapOpConfigBase):
+    type: Literal["shuffle"] = "shuffle"
+    random_state: int = 42

@@ -6,6 +6,14 @@ from ..filter.config import FilterConfig
 
 
 @operation_library(
+    "fess38.data_processing.operation.mapper.eval_expression.EvalExpressionMapOp"
+)
+class EvalExpressionMapOpConfig(MapOpConfigBase):
+    type: Literal["eval_expression"] = "eval_expression"
+    expression: str
+
+
+@operation_library(
     "fess38.data_processing.operation.mapper.filter_chain.FilterChainMapOp"
 )
 class FilterChainMapOpConfig(MapOpConfigBase):

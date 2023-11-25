@@ -15,8 +15,8 @@ class LogisticRegressionTrainOp(TrainOpBase):
 
     def _train_fn(self, records: Iterable[SampleRecord], role: str | None):
         model = LogisticRegression(
-            random_state=self._config.random_state,
-            **self._config.kwargs,
+            random_state=self.config.random_state,
+            **self.config.kwargs,
         )
 
         records = list(records)

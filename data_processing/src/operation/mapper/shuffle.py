@@ -10,7 +10,7 @@ class ShuffleMapOp(MapOpBase):
         super().__init__(config, self._map_fn)
 
     def _map_fn(self, records: Iterable[Any], role: str | None) -> Iterable[Any]:
-        random.seed(self._config.random_state)
+        random.seed(self.config.random_state)
         records = list(records)
         random.shuffle(records)
         yield from records

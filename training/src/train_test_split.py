@@ -16,17 +16,17 @@ class TrainTestSplitMapOp(MapOpBase):
         super().__init__(config, self._map_fn)
 
     def _map_fn(self, records: Iterable[Any], role: str | None) -> OutputIterable:
-        random.seed(self._config.random_state)
+        random.seed(self.config.random_state)
         counter = 0
 
         for record in records:
             counter += 1
             index = _TRAIN_INDEX
-            if self._config.test_size and counter <= self._config.test_size:
+            if self.config.test_size and counter <= self.config.test_size:
                 index = _TEST_INDEX
             elif (
-                self._config.test_proportion
-                and random.random() < self._config.test_proportion
+                self.config.test_proportion
+                and random.random() < self.config.test_proportion
             ):
                 index = _TEST_INDEX
 

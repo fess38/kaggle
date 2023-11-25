@@ -20,12 +20,12 @@ class RandomProduceOp(ProduceOpBase):
     def _produce_fn(self) -> Iterable[dict]:
         col_id_to_type = dict(
             (col_id, random.choice([int, float, str]))
-            for col_id in range(self._config.col_count)
+            for col_id in range(self.config.col_count)
         )
 
-        for row_id in range(self._config.row_count):
+        for row_id in range(self.config.row_count):
             record = {"id": row_id}
-            for col_id in range(self._config.col_count):
+            for col_id in range(self.config.col_count):
                 col_type = col_id_to_type[col_id]
                 generate_fn = self._type_to_generate_fn[col_type]
                 record[f"column_{col_id}"] = generate_fn()

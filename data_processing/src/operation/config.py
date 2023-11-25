@@ -5,7 +5,7 @@ from ..io.dataset_reference import InputDatasetReference, OutputDatasetReference
 
 
 class OpConfigBase(ConfigBase):
-    name: str | None = None
+    name: str  # set automatically
     backend: BackendConfig = LocalBackendConfig()
     input_files: dict[str, str] = {}
     output_files: dict[str, str] = {}

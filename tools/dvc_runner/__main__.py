@@ -15,16 +15,26 @@ def set_gitignore():
         f.write("data/\n")
         f.write("stages/\n")
         f.write("tmp/\n")
+        f.write("wandb/\n")
+
+
+def prepare_env(project_dir: str):
+    os.environ["DVC_NO_ANALYTICS"] = "1"
+    os.environ["WANDB_CONSOLE"] = "off"
+    os.environ["WANDB_DISABLE_CODE"] = "true"
+    os.environ["WANDB_DISABLE_GIT"] = "true"
+    os.environ["WANDB_PROJECT"] = project_dir.replace("/", "_")
 
 
 def _prepare_stage(
     config: DictConfig,
     stage_name: str,
-    operation: str,
+    operation: dict,
     operation_runner_command: str,
 ) -> dict:
     path = f"stages/{stage_name}.yaml"
     with open(path, "wt") as f:
+        operation["name"] = stage_name
         f.write(OmegaConf.to_yaml({"ops": [operation]}))
 
     stage = {
@@ -88,9 +98,10 @@ def main(config: DictConfig):
         config.config_path,
         config.operation_runner_path,
     )
+    prepare_env(config.project_dir)
 
     if not Path(".dvc").exists():
-        subprocess.check_call("dvc init --subdir", shell=True)
+        subprocess.check_call("dvc init -q --subdir", shell=True)
         set_gitignore()
     subprocess.check_call(f"{config.dvc_command} {config.dvc_args}", shell=True)
 

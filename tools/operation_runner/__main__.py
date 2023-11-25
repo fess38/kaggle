@@ -34,7 +34,7 @@ def main(cfg: DictConfig):
 
     config_path = cfg["config_path"]
     logger.info(f"Start executing operations from {config_path}")
-    for config in OpChainConfig.from_file(cfg["config_path"]).ops:
+    for config in OpChainConfig.from_file(config_path).ops:
         operation_class_name = operation_library[type(config), True]
         class_ = find_class(operation_class_name)
         logger.info(f"Start executing {class_.__name__} operation")

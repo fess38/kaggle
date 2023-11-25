@@ -7,7 +7,5 @@ dvc_args: ""
 hydra:
   job:
     chdir: true
-    env_set:
-      DVC_NO_ANALYTICS: "1"
   run:
     dir: ${project_dir}/outputs

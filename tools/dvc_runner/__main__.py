@@ -27,7 +27,6 @@ def prepare_env(project_dir: str):
 
 
 def _prepare_stage(
-    config: DictConfig,
     stage_name: str,
     operation: dict,
     operation_runner_command: str,
@@ -44,11 +43,11 @@ def _prepare_stage(
     }
 
     for params, stage_param in [("input_files", "deps"), ("output_files", "outs")]:
-        for value in config[stage_name].get(params, {}).values():
+        for value in operation.get(params, {}).values():
             stage[stage_param].append(value)
 
     for params, stage_param in [("inputs", "deps"), ("outputs", "outs")]:
-        for value in config[stage_name].get(params, []):
+        for value in operation.get(params, []):
             stage[stage_param].append(value["path"])
 
     return stage
@@ -65,9 +64,9 @@ def _prepare_stages(
         f"python {hydra.utils.get_original_cwd()}/{operation_runner_path}"
         " ++hydra.run.dir=."
     )
-    for stage_name, operation in config.items():
+    for index, (stage_name, operation) in enumerate(config.items()):
+        stage_name = f"{index + 1:02d}_{stage_name}"
         dvc_config["stages"][stage_name] = _prepare_stage(
-            config,
             stage_name,
             operation,
             operation_runner_command,

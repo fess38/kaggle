@@ -15,3 +15,9 @@ class TrainTestSplitMapOpConfig(MapOpConfigBase):
     random_state: int = 0
     test_size: int | None = None
     test_proportion: float | None = None
+
+
+@operation_library("fess38.training.metric_calculator.MetricCalculationConsumeOp")
+class MetricCalculationConsumeOpConfig(MapOpConfigBase):
+    type: Literal["metric_calculator"] = "metric_calculator"
+    metric_configs: dict[Literal["accuracy", "precision", "recall", "f1"], Any]

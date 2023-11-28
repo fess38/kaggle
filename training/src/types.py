@@ -12,4 +12,5 @@ class SampleRecord(BaseModel, extra="forbid"):
 class PredictionRecord(BaseModel, extra="forbid"):
     id: str
     labels: list[int | float] | None = None
+    sample_weight: float | None = None
     predictions: list[float]

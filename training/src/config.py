@@ -20,4 +20,4 @@ class TrainTestSplitMapOpConfig(MapOpConfigBase):
 @operation_library("fess38.training.metric_calculator.MetricCalculationConsumeOp")
 class MetricCalculationConsumeOpConfig(MapOpConfigBase):
     type: Literal["metric_calculator"] = "metric_calculator"
-    metric_configs: dict[Literal["accuracy", "precision", "recall", "f1"], Any]
+    metric_configs: dict[str, Any]

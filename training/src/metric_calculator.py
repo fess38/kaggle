@@ -6,7 +6,7 @@ import wandb.plot
 import wandb.sklearn
 from fess38.data_processing.operation.consumer.base import ConsumeOpBase
 from fess38.util.wandb import wandb_init
-from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support, r2_score
 
 from .config import MetricCalculationConsumeOpConfig
 from .types import PredictionRecord
@@ -21,6 +21,7 @@ class MetricCalculationConsumeOp(ConsumeOpBase):
             "precision": self._precision,
             "recall": self._recall,
             "f1": self._f1,
+            "r2": self._r2,
             "precision_recall_curve": self._precision_recall_curve,
             "roc_curve": self._roc_curve,
             "confusion_matrix": self._confusion_matrix,
@@ -71,6 +72,14 @@ class MetricCalculationConsumeOp(ConsumeOpBase):
 
     def _f1(self, metric_config: dict, records: list[PredictionRecord]):
         self._precision_recall_f1(metric_config, records)
+
+    def _r2(self, metric_config: dict, records: list[PredictionRecord]):
+        wandb.summary["r2"] = r2_score(
+            y_true=[record.labels[0] for record in records],
+            y_pred=[record.predictions[0] for record in records],
+            sample_weight=[record.sample_weight or 1 for record in records],
+            multioutput=metric_config.get("multioutput", "uniform_average"),
+        )
 
     def _precision_recall_curve(
         self,

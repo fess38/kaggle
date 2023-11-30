@@ -1,0 +1,46 @@
+produce_csv:
+  type: random_produce
+  row_count: 10000
+  col_count: 10
+  outputs:
+    - type: file
+      path: data/random.csv
+      allow_overwrite: true
+      record_formatter:
+        type: csv
+
+produce_jsonl:
+  type: random_produce
+  row_count: 10000
+  col_count: 10
+  outputs:
+    - type: file
+      path: data/random.jsonl
+      allow_overwrite: true
+      record_formatter:
+        type: jsonl
+
+produce_parquet:
+  type: random_produce
+  row_count: 10000
+  col_count: 10
+  outputs:
+    - type: file
+      path: data/random.parquet
+      allow_overwrite: true
+      record_formatter:
+        type: parquet
+
+parquet_to_csv:
+  type: merge
+  inputs:
+    - type: file
+      path: data/random.parquet
+      record_formatter:
+        type: parquet
+  outputs:
+    - type: file
+      path: data/merged.csv
+      allow_overwrite: true
+      record_formatter:
+        type: csv

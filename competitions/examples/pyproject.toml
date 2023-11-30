@@ -1,0 +1,11 @@
+[project]
+name = "fess38.competitions.examples"
+version = "2023.11.19"
+requires-python = ">=3.10"
+dynamic = ["dependencies"]
+
+[tool.setuptools.package-dir]
+"fess38.competitions.examples" = "src"
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }

@@ -1,0 +1,2 @@
+fess38.data_processing @ file:///usr/local/lib/kaggle/data_processing
+scikit-learn==1.3.2

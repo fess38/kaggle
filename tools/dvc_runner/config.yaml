@@ -1,0 +1,11 @@
+project_dir: ???
+config_path: configs/config.yaml
+operation_runner_path: tools/operation_runner/__main__.py
+dvc_command: "dvc exp run"
+dvc_args: ""
+
+hydra:
+  job:
+    chdir: true
+  run:
+    dir: ${project_dir}/outputs

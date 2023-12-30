@@ -2,7 +2,7 @@ from typing import Iterable
 
 import joblib
 from fess38.data_processing.operation.mapper.base import MapOpBase
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, SGDRegressor
 
 from ..base import TrainOpBase
 from ..types import PredictionRecord, SampleRecord
@@ -12,9 +12,13 @@ from .config import LinearRegressionInferenceOpConfig, LinearRegressionTrainOpCo
 class LinearRegressionTrainOp(TrainOpBase):
     def __init__(self, config: LinearRegressionTrainOpConfig):
         super().__init__(config, self._train_fn)
+        self._model_name_to_cls = {
+            "LinearRegression": LinearRegression,
+            "SGDRegressor": SGDRegressor,
+        }
 
     def _train_fn(self, records: Iterable[SampleRecord], role: str | None):
-        model = LinearRegression(**self.config.kwargs)
+        model = self._model_name_to_cls[self.config.model_name](**self.config.kwargs)
 
         records = list(records)
         model.fit(
@@ -39,7 +43,7 @@ class LinearRegressionInferenceOp(MapOpBase):
         records: Iterable[SampleRecord],
         role: str | None,
     ) -> Iterable[PredictionRecord]:
-        model: LinearRegression = joblib.load(self.config.input_files["model.bin"])
+        model = joblib.load(self.config.input_files["model.bin"])
         records = list(records)
         for record in records:
             predictions = model.predict([record.num_features]).tolist()

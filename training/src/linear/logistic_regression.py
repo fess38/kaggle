@@ -2,7 +2,7 @@ from typing import Iterable
 
 import joblib
 from fess38.data_processing.operation.mapper.base import MapOpBase
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, SGDClassifier
 
 from ..base import TrainOpBase
 from ..types import PredictionRecord, SampleRecord
@@ -12,9 +12,13 @@ from .config import LogisticRegressionInferenceOpConfig, LogisticRegressionTrain
 class LogisticRegressionTrainOp(TrainOpBase):
     def __init__(self, config: LogisticRegressionTrainOpConfig):
         super().__init__(config, self._train_fn)
+        self._model_name_to_cls = {
+            "LogisticRegression": LogisticRegression,
+            "SGDClassifier": SGDClassifier,
+        }
 
     def _train_fn(self, records: Iterable[SampleRecord], role: str | None):
-        model = LogisticRegression(
+        model = self._model_name_to_cls[self.config.model_name](
             random_state=self.config.random_state,
             **self.config.kwargs,
         )
@@ -42,7 +46,7 @@ class LogisticRegressionInferenceOp(MapOpBase):
         records: Iterable[SampleRecord],
         role: str | None,
     ) -> Iterable[PredictionRecord]:
-        model: LogisticRegression = joblib.load(self.config.input_files["model.bin"])
+        model = joblib.load(self.config.input_files["model.bin"])
         records = list(records)
         for record in records:
             predictions = model.predict_proba([record.num_features]).tolist()[0]

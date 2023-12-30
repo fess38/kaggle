@@ -12,6 +12,7 @@ class ConfigBase(pydantic.BaseModel, Generic[T]):
     class Config:
         frozen: bool = True
         extra = "forbid"
+        protected_namespaces = ()
 
     vars: dict | None = pydantic.Field(default=None, repr=False)
 

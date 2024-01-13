@@ -27,16 +27,18 @@ def prepare_env(project_dir: str):
 
 
 def _prepare_stage(
+    stage_id: str,
     stage_name: str,
     operation: dict,
     operation_runner_command: str,
 ) -> dict:
-    path = f"stages/{stage_name}.yaml"
+    path = f"stages/{stage_id}_{stage_name}.yaml"
     with open(path, "wt") as f:
         operation["name"] = stage_name
         f.write(OmegaConf.to_yaml({"ops": [operation]}))
 
     stage = {
+        "desc": stage_name,
         "cmd": f"{operation_runner_command} ++config_path={path}",
         "deps": [path],
         "outs": [],
@@ -65,8 +67,9 @@ def _prepare_stages(
         " ++hydra.run.dir=."
     )
     for index, (stage_name, operation) in enumerate(config.items()):
-        stage_name = f"{index + 1:02d}_{stage_name}"
-        dvc_config["stages"][stage_name] = _prepare_stage(
+        stage_id = f"{index + 1:02d}"
+        dvc_config["stages"][stage_id] = _prepare_stage(
+            stage_id,
             stage_name,
             operation,
             operation_runner_command,

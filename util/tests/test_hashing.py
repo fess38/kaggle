@@ -2,7 +2,6 @@ from typing import Any, Callable
 
 import numpy as np
 import pytest
-import sklearn.utils
 from fess38.util.hashing import (
     combine_hashes,
     deterministic_hash,
@@ -15,7 +14,6 @@ from fess38.util.hashing import (
     ["value", "hash_fn", "expected"],
     [
         (1, deterministic_hash_32, -68075478),
-        (1, sklearn.utils.murmurhash3_32, -68075478),
         (1, deterministic_hash, 19144387141682250),
         (b"", deterministic_hash_128, 0),
         (

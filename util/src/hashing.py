@@ -1,7 +1,6 @@
 from typing import Callable
 
 import numpy as np
-import sklearn.utils
 from mmh3 import hash, hash64, hash_bytes
 
 Hashable = int | str | bytes | np.ndarray | None
@@ -14,7 +13,7 @@ def _deterministic_hash_impl(
         value = b""
 
     if isinstance(value, int):
-        if hash_fn in (hash, sklearn.utils):
+        if hash_fn == hash:
             value = np.int32(value)
         else:
             value = np.int64(value)

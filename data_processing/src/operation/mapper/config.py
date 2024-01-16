@@ -29,4 +29,4 @@ class MergeOpMapConfig(MapOpConfigBase):
 @operation_library("fess38.data_processing.operation.mapper.shuffle.ShuffleMapOp")
 class ShuffleMapOpConfig(MapOpConfigBase):
     type: Literal["shuffle"] = "shuffle"
-    random_state: int = 0
+    seed: int = 0

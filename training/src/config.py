@@ -12,9 +12,8 @@ class TrainOpConfigBase(ConsumeOpConfigBase):
 @operation_library("fess38.training.train_test_split.TrainTestSplitMapOp")
 class TrainTestSplitMapOpConfig(MapOpConfigBase):
     type: Literal["train_test_split"] = "train_test_split"
-    random_state: int = 0
-    test_size: int | None = None
-    test_proportion: float | None = None
+    based_on: list[str]
+    sampling_rate: float
 
 
 @operation_library("fess38.training.metric_calculator.MetricCalculationConsumeOp")

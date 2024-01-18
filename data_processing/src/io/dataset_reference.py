@@ -16,7 +16,7 @@ class InputDatasetReferenceBase(DatasetReferenceBase):
 
 
 class OutputDatasetReferenceBase(DatasetReferenceBase):
-    allow_overwrite: bool = False
+    allow_overwrite: bool = True
 
 
 class FileDatasetReferenceMixin(DatasetReferenceBase):

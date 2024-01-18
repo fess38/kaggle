@@ -1,32 +1,42 @@
 from pathlib import Path
 
+import pytest
 from fess38.data_processing.io.record_formatter import CsvRecordFormatter
 
 
-def test_csv_record_formatter_default(tmp_path: Path):
+@pytest.mark.parametrize(
+    ["csv_str", "params", "expected"],
+    [
+        ("a,b\n1,c", {"column_renames": {"a": "z"}}, {"z": 1, "b": "c"}),
+        ("a,b\n2,d", {"column_renames": {"b": "y"}}, {"a": 2, "y": "d"}),
+        (
+            "a\tb\td\n1\tc\tp",
+            {
+                "skip_rows": 1,
+                "column_names": ["z", "x", "c"],
+                "delimiter": "\t",
+                "include_columns": ["x", "c"],
+            },
+            {"x": "c", "c": "p"},
+        ),
+        (
+            "a\tb\td\n2\t\tf",
+            {
+                "skip_rows": 1,
+                "column_names": ["z", "x", "c"],
+                "delimiter": "\t",
+                "include_columns": ["z", "x"],
+            },
+            {"z": 2, "x": None},
+        ),
+    ],
+)
+def test_csv_record_formatter(
+    csv_str: str, params: dict, expected: dict, tmp_path: Path
+):
     csv_file = tmp_path / "foo.csv"
     with csv_file.open("wt") as f:
-        f.write("a,b\n1,c\n2,d")
+        f.write(csv_str)
 
-    lines = list(CsvRecordFormatter(column_renames={"a": "z"}).read(csv_file))
-    assert len(lines) == 2
-    assert lines[0] == {"z": 1, "b": "c"}
-    assert lines[1] == {"z": 2, "b": "d"}
-
-
-def test_csv_record_formatter_custom(tmp_path: Path):
-    csv_file = tmp_path / "foo.csv"
-    with csv_file.open("wt") as f:
-        f.write("a\tb\td\n1\tc\tp\n2\t\tf")
-
-    lines = list(
-        CsvRecordFormatter(
-            skip_rows=1,
-            column_names=["z", "x", "c"],
-            delimiter="\t",
-            include_columns=["x", "c"],
-        ).read(csv_file)
-    )
-    assert len(lines) == 2
-    assert lines[0] == {"x": "c", "c": "p"}
-    assert lines[1] == {"x": None, "c": "f"}
+    lines = list(CsvRecordFormatter(**params).read(csv_file))
+    assert lines[0] == expected

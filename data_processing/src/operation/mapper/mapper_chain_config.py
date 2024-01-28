@@ -9,6 +9,11 @@ class MapperConfigBase(ConfigBase):
     ...
 
 
+class ExecuteExpressionsMapperConfig(MapperConfigBase):
+    type: Literal["execute_expressions"] = "execute_expressions"
+    expressions: list[str]
+
+
 class AddConstantFieldMapperConfig(MapperConfigBase):
     type: Literal["add_constant_field"] = "add_constant_field"
     path: PyTreePath
@@ -16,6 +21,6 @@ class AddConstantFieldMapperConfig(MapperConfigBase):
 
 
 MapperConfig = Annotated[
-    (AddConstantFieldMapperConfig),
+    (ExecuteExpressionsMapperConfig | AddConstantFieldMapperConfig),
     pydantic.Field(discriminator="type"),
 ]

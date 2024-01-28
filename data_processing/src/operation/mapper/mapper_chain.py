@@ -18,6 +18,6 @@ class MapperChainMapOp(MapOpBase):
 
     def _map_fn(self, record: dict, role: str | None) -> OutputIterable:
         for mapper_fn in self._mapper_fns:
-            record = mapper_fn(record, role)
+            record = mapper_fn(record)
 
         yield record

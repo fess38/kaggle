@@ -75,6 +75,7 @@ def test_set_field_by_path(tree: PyTree, path: PyTreePath, value: Any):
 @pytest.mark.parametrize(
     ("tree", "path"),
     [
+        ({"a": 1}, "a"),
         ({"a": {"b": 1}}, "a"),
         ({"a": {"b": 1}}, "a.b"),
         ({"a": {"b": 1}}, "a.c"),

@@ -50,16 +50,15 @@ class RecordFormatterBase(ConfigBase, abc.ABC):
 
     def _delete_paths(self, record: PyTree):
         if self.paths_to_delete:
-            for column_to_delete in self.paths_to_delete:
-                delete_field_by_path(record, column_to_delete)
+            for path_to_delete in self.paths_to_delete:
+                delete_field_by_path(record, path_to_delete)
 
     def _move_paths(self, record: PyTree):
         if self.paths_to_move:
             for old_path, new_path in self.paths_to_move.items():
-                path_exists, value = get_field_by_path_safe(record, old_path)
-                if path_exists:
-                    delete_field_by_path(record, old_path)
-                    set_field_by_path(record, new_path, value)
+                value = get_field_by_path_safe(record, old_path)[1]
+                delete_field_by_path(record, old_path)
+                set_field_by_path(record, new_path, value)
 
     def _keep_only_columns(self, record: PyTree):
         if self.columns_to_keep:

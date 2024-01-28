@@ -1,15 +1,14 @@
-import logging
 from dataclasses import dataclass
-from typing import Any, Iterable
+from typing import Iterable
 
-logger = logging.getLogger(__name__)
+from fess38.util.typing import PyTree
 
 
 @dataclass
 class OutputRecord:
-    value: Any
+    value: PyTree
     index: int | None = None
     role: str | None = None
 
 
-OutputIterable = Iterable[Any | OutputRecord]
+OutputIterable = Iterable[PyTree | OutputRecord]

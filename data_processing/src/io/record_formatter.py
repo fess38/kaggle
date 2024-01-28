@@ -1,44 +1,71 @@
 import abc
 from collections.abc import Iterable, Iterator
-from typing import IO, Annotated, Any, Literal
+from typing import IO, Annotated, Literal
 
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pydantic
 import ujson as json
 from fess38.util.config import ConfigBase
+from fess38.util.pytree import (
+    delete_field_by_path,
+    get_field_by_path_safe,
+    set_field_by_path,
+)
+from fess38.util.typing import PyTree, PyTreePath
 from pyarrow import csv
 
 
 class RecordFormatterBase(ConfigBase, abc.ABC):
     read_mode: str = "rb"
     write_mode: str = "wb"
-    column_renames: dict[str, str] = None
-    columns_to_delete: list[str] = None
+    paths_to_delete: set[PyTreePath] = None
+    paths_to_move: dict[PyTreePath, PyTreePath] = None
+    columns_to_keep: set[str] = None
 
-    def read(self, f: IO) -> Iterator[Any]:
+    def read(self, f: IO) -> Iterator[PyTree]:
         for record in self._read_impl(f):
-            self._delete_columns(record)
-            self._rename_columns(record)
+            self._delete_paths(record)
+            self._move_paths(record)
+            self._keep_only_columns(record)
             yield record
 
     @abc.abstractmethod
-    def _read_impl(self, f: IO) -> Iterator[Any]:
+    def _read_impl(self, f: IO) -> Iterator[PyTree]:
         ...
+
+    def write(self, f: IO, records: Iterable[PyTree]):
+        def _post_process_records() -> Iterable[PyTree]:
+            for record in records:
+                self._delete_paths(record)
+                self._move_paths(record)
+                self._keep_only_columns(record)
+                yield record
+
+        self._write_impl(f, _post_process_records())
 
     @abc.abstractmethod
-    def write(self, f: IO, records: Iterable[Any]):
+    def _write_impl(self, f: IO, records: Iterable[PyTree]):
         ...
 
-    def _rename_columns(self, record: dict[str, Any]):
-        if self.column_renames:
-            for old_key, new_key in self.column_renames.items():
-                record[new_key] = record.pop(old_key, None)
+    def _delete_paths(self, record: PyTree):
+        if self.paths_to_delete:
+            for column_to_delete in self.paths_to_delete:
+                delete_field_by_path(record, column_to_delete)
 
-    def _delete_columns(self, record: dict[str, Any]):
-        if self.columns_to_delete:
-            for column_to_delete in self.columns_to_delete:
-                record.pop(column_to_delete, None)
+    def _move_paths(self, record: PyTree):
+        if self.paths_to_move:
+            for old_path, new_path in self.paths_to_move.items():
+                path_exists, value = get_field_by_path_safe(record, old_path)
+                if path_exists:
+                    delete_field_by_path(record, old_path)
+                    set_field_by_path(record, new_path, value)
+
+    def _keep_only_columns(self, record: PyTree):
+        if self.columns_to_keep:
+            for column in list(record.keys()):
+                if column not in self.columns_to_keep:
+                    delete_field_by_path(record, column)
 
 
 class CsvRecordFormatter(RecordFormatterBase):
@@ -50,7 +77,7 @@ class CsvRecordFormatter(RecordFormatterBase):
     strings_can_be_null: bool = True
     include_columns: list[str] = None
 
-    def _read_impl(self, f: IO) -> Iterator[dict[str, Any]]:
+    def _read_impl(self, f: IO) -> Iterator[PyTree]:
         yield from csv.read_csv(
             f,
             read_options=csv.ReadOptions(
@@ -67,7 +94,7 @@ class CsvRecordFormatter(RecordFormatterBase):
             ),
         ).to_pylist()
 
-    def write(self, f: IO, records: Iterable[dict[str, Any]]):
+    def _write_impl(self, f: IO, records: Iterable[PyTree]):
         csv.write_csv(
             pa.Table.from_pylist(records),
             f,
@@ -80,11 +107,11 @@ class JsonlRecordFormatter(RecordFormatterBase):
     read_mode: str = "rt"
     write_mode: str = "wt"
 
-    def _read_impl(self, f: IO) -> Iterator[Any]:
+    def _read_impl(self, f: IO) -> Iterator[PyTree]:
         for row in f:
             yield json.loads(row)
 
-    def write(self, f: IO, records: Iterable[dict[str, Any]]):
+    def _write_impl(self, f: IO, records: Iterable[PyTree]):
         for record in records:
             f.write(f"{json.dumps(record, ensure_ascii=False)}\n")
 
@@ -95,7 +122,7 @@ class ParquetRecordFormatter(RecordFormatterBase):
     columns: list[str] | None = None
     compression: Literal["NONE", "SNAPPY", "GZIP", "BROTLI", "LZ4", "ZSTD"] = "SNAPPY"
 
-    def _read_impl(self, f: IO) -> Iterator[Any]:
+    def _read_impl(self, f: IO) -> Iterator[PyTree]:
         parquet_file = pq.ParquetFile(f)
         for batch in parquet_file.iter_batches(
             batch_size=self.batch_size,
@@ -103,7 +130,7 @@ class ParquetRecordFormatter(RecordFormatterBase):
         ):
             yield from batch.to_pylist()
 
-    def write(self, f: IO, records: Iterable[Any]):
+    def _write_impl(self, f: IO, records: Iterable[PyTree]):
         pq.write_table(
             table=pa.Table.from_pylist(records),
             where=f,

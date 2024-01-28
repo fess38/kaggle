@@ -42,11 +42,7 @@ class LocalBackend(BackendBase):
     def __init__(self, config: LocalBackendConfig):
         self._config = config
 
-    def run(
-        self,
-        config: RunOpConfigBase,
-        run_fn: RunFn,
-    ):
+    def run(self, config: RunOpConfigBase, run_fn: RunFn):
         logger.info(
             f"Running run operation {config.name or type(config)} using local backend"
         )

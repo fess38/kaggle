@@ -4,11 +4,7 @@ from ..protocol import RunFn
 
 
 class RunOpBase(OpBase):
-    def __init__(
-        self,
-        config: RunOpConfigBase,
-        run_fn: RunFn,
-    ):
+    def __init__(self, config: RunOpConfigBase, run_fn: RunFn):
         if len(config.inputs) != 0:
             raise ValueError("Run op should have no inputs.")
 

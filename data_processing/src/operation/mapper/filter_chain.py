@@ -22,7 +22,7 @@ class FilterChainMapOp(MapOpBase):
         should_keep = True
         drop_to_role = None
         for filter_config, filter_fn in zip(self.config.filters, self._filter_fns):
-            should_keep &= filter_fn(record, role)
+            should_keep &= filter_fn(record)
             if not should_keep:
                 drop_to_role = filter_config.record_dropped_to_role
                 break

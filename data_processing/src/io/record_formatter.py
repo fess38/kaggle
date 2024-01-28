@@ -95,7 +95,7 @@ class CsvRecordFormatter(RecordFormatterBase):
 
     def _write_impl(self, f: IO, records: Iterable[PyTree]):
         csv.write_csv(
-            pa.Table.from_pylist(records),
+            pa.Table.from_pylist(list(records)),
             f,
             write_options=csv.WriteOptions(delimiter=self.delimiter),
         )
@@ -131,7 +131,7 @@ class ParquetRecordFormatter(RecordFormatterBase):
 
     def _write_impl(self, f: IO, records: Iterable[PyTree]):
         pq.write_table(
-            table=pa.Table.from_pylist(records),
+            table=pa.Table.from_pylist(list(records)),
             where=f,
             compression=self.compression,
         )

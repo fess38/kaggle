@@ -2,15 +2,8 @@ from typing import Literal
 
 from .. import operation_library
 from ..config import MapOpConfigBase
-from ..filter.config import FilterConfig
-
-
-@operation_library(
-    "fess38.data_processing.operation.mapper.eval_expression.EvalExpressionMapOp"
-)
-class EvalExpressionMapOpConfig(MapOpConfigBase):
-    type: Literal["eval_expression"] = "eval_expression"
-    expression: str
+from .filter_chain_config import FilterConfig
+from .mapper_chain_config import MapperConfig
 
 
 @operation_library(
@@ -19,6 +12,22 @@ class EvalExpressionMapOpConfig(MapOpConfigBase):
 class FilterChainMapOpConfig(MapOpConfigBase):
     type: Literal["filter_chain"] = "filter_chain"
     filters: list[FilterConfig]
+
+
+@operation_library(
+    "fess38.data_processing.operation.mapper.mapper_chain.MapperChainMapOp"
+)
+class MapperChainMapOpConfig(MapOpConfigBase):
+    type: Literal["mapper_chain"] = "mapper_chain"
+    mappers: list[MapperConfig]
+
+
+@operation_library(
+    "fess38.data_processing.operation.mapper.eval_expression.EvalExpressionMapOp"
+)
+class EvalExpressionMapOpConfig(MapOpConfigBase):
+    type: Literal["eval_expression"] = "eval_expression"
+    expression: str
 
 
 @operation_library("fess38.data_processing.operation.mapper.merge.MergeMapOp")

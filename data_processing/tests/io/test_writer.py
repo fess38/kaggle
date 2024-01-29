@@ -17,7 +17,7 @@ from fess38.data_processing.io.writer import FileDatasetWriter
 
 
 @pytest.mark.parametrize(
-    ["records", "record_formatter"],
+    ("records", "record_formatter"),
     list(
         product(
             [CsvRecordFormatter(), JsonlRecordFormatter(), ParquetRecordFormatter()],

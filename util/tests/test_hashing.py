@@ -11,7 +11,7 @@ from fess38.util.hashing import (
 
 
 @pytest.mark.parametrize(
-    ["value", "hash_fn", "expected"],
+    ("value", "hash_fn", "expected"),
     [
         (1, deterministic_hash_32, -68075478),
         (1, deterministic_hash, 19144387141682250),
@@ -31,7 +31,7 @@ def test_deterministic_hash(value: Any, hash_fn: Callable, expected: int | bytes
 
 
 @pytest.mark.parametrize(
-    ["args", "expected"],
+    ("args", "expected"),
     [
         ([1, 2, 3], 2484014600714012592),
         ([np.array(1), np.array(2), np.array(3)], 2484014600714012592),

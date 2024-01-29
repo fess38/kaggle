@@ -1,6 +1,8 @@
 import abc
 from pathlib import Path
-from typing import IO, Any
+from typing import IO
+
+from fess38.util.typing import PyTree
 
 from .common import FileDatasetIOMixin
 from .dataset_reference import FileOutputDatasetReference, OutputDatasetReference
@@ -8,7 +10,7 @@ from .dataset_reference import FileOutputDatasetReference, OutputDatasetReferenc
 
 class DatasetWriterBase(abc.ABC):
     @abc.abstractmethod
-    def write(self, record: Any):
+    def write(self, record: PyTree):
         ...
 
     @abc.abstractmethod
@@ -24,7 +26,7 @@ class FileDatasetWriter(DatasetWriterBase, FileDatasetIOMixin):
         self._validate_record_class()
         self._validate_allow_overwrite()
 
-    def write(self, record: Any):
+    def write(self, record: PyTree):
         if self._data_file is None:
             self._fs.makedirs(Path(self.data_path).parent, exist_ok=True)
             self._data_file = self._fs.open(

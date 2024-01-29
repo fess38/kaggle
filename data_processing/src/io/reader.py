@@ -1,6 +1,8 @@
 import abc
 from collections.abc import Iterator
-from typing import IO, Any
+from typing import IO
+
+from fess38.util.typing import PyTree
 
 from .common import FileDatasetIOMixin
 from .dataset_reference import FileInputDatasetReference, InputDatasetReference
@@ -8,7 +10,7 @@ from .dataset_reference import FileInputDatasetReference, InputDatasetReference
 
 class DatasetReaderBase(abc.ABC):
     @abc.abstractmethod
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self) -> Iterator[PyTree]:
         ...
 
     @abc.abstractmethod
@@ -22,7 +24,7 @@ class FileDatasetReader(DatasetReaderBase, FileDatasetIOMixin):
         self._data_file: IO = None
         self._validate_record_class()
 
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self) -> Iterator[PyTree]:
         if self._data_file is None:
             self._data_file = self._fs.open(
                 self.data_path,

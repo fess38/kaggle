@@ -6,11 +6,7 @@ from ..protocol import ProduceFn
 
 
 class ProduceOpBase(OpBase):
-    def __init__(
-        self,
-        config: ProduceOpConfigBase,
-        produce_fns: Sequence[ProduceFn],
-    ):
+    def __init__(self, config: ProduceOpConfigBase, produce_fns: Sequence[ProduceFn]):
         if len(config.inputs) != 0:
             raise ValueError("Produce op should have no inputs.")
 

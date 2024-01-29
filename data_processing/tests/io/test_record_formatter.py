@@ -7,8 +7,10 @@ from fess38.data_processing.io.record_formatter import CsvRecordFormatter
 @pytest.mark.parametrize(
     ["csv_str", "params", "expected"],
     [
-        ("a,b\n1,c", {"column_renames": {"a": "z"}}, {"z": 1, "b": "c"}),
-        ("a,b\n2,d", {"column_renames": {"b": "y"}}, {"a": 2, "y": "d"}),
+        ("a,b\n1,c", {"paths_to_move": {"a": "z"}}, {"z": 1, "b": "c"}),
+        ("a,b\n2,d", {"paths_to_move": {"b": "y"}}, {"a": 2, "y": "d"}),
+        ("a,b\n2,d", {"paths_to_delete": {"a"}}, {"b": "d"}),
+        ("a,b\n2,d", {"columns_to_keep": {"a"}}, {"a": 2}),
         (
             "a\tb\td\n1\tc\tp",
             {

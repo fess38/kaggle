@@ -1,5 +1,7 @@
 from typing import Any, Iterable, Protocol
 
+from fess38.util.typing import PyTree
+
 from ..io.record import OutputIterable
 
 
@@ -9,57 +11,59 @@ class RunFn(Protocol):
 
 
 class ConsumeFn(Protocol):
-    def __call__(self, record: Any, role: str | None):
+    def __call__(self, record: PyTree, role: str | None):
         ...
 
 
 class ConsumeAggregatorFn(Protocol):
-    def __call__(self, records: Iterable[Any], role: str | None) -> None:
+    def __call__(self, records: Iterable[PyTree], role: str | None) -> None:
         ...
 
 
 class ProduceFn(Protocol):
-    def __call__(self) -> Iterable[Any]:
+    def __call__(self) -> Iterable[PyTree]:
         ...
 
 
 class MapFn(Protocol):
-    def __call__(self, record: Any, role: str | None) -> OutputIterable:
+    def __call__(self, record: PyTree, role: str | None) -> OutputIterable:
         ...
 
 
 class MapAggregatorFn(Protocol):
-    def __call__(self, records: Iterable[Any], role: str | None) -> OutputIterable:
+    def __call__(self, records: Iterable[PyTree], role: str | None) -> OutputIterable:
         ...
 
 
 class FilterFn(Protocol):
-    def __call__(self, record: Any, role: str | None, **kwargs) -> bool:
+    def __call__(self, record: PyTree, role: str | None, **kwargs) -> bool:
         ...
 
 
 class MapReduceMapFn(Protocol):
-    def __call__(self, record: Any, role: str | None) -> tuple[Any, Iterable[Any]]:
+    def __call__(
+        self, record: PyTree, role: str | None
+    ) -> tuple[Any, Iterable[PyTree]]:
         ...
 
 
 class MapReduceMapAggregatorFn(Protocol):
     def __call__(
         self,
-        records: Iterable[Any],
+        records: Iterable[PyTree],
         role: str | None,
-    ) -> tuple[Any, Iterable[Any]]:
+    ) -> tuple[Any, Iterable[PyTree]]:
         ...
 
 
 class MapReduceReduceFn(Protocol):
-    def __call__(self, key: Any, records: Iterable[Any]) -> OutputIterable:
+    def __call__(self, key: Any, records: Iterable[PyTree]) -> OutputIterable:
         ...
 
 
 class MapReduceReduceAggregatorFn(Protocol):
     def __call__(
         self,
-        record_groups: Iterable[tuple[Any, Iterable[Any]]],
+        record_groups: Iterable[tuple[Any, Iterable[PyTree]]],
     ) -> OutputIterable:
         ...

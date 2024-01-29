@@ -1,5 +1,7 @@
 import logging
-from typing import Any, Sequence
+from typing import Sequence
+
+from fess38.util.typing import PyTree
 
 from .dataset_reference import OutputDatasetReference
 from .record import OutputIterable, OutputRecord
@@ -29,7 +31,7 @@ class OutputRecordCollector:
                     raise ValueError(f"Multiple writers found for role {output.role}.")
                 self._role_to_writer[output.role] = writer
 
-    def add(self, record: Any, index=None, role=None):
+    def add(self, record: PyTree, index=None, role=None):
         if role is None:
             self.add_at_index(record, index if index is not None else 0)
         else:
@@ -37,7 +39,7 @@ class OutputRecordCollector:
                 raise ValueError("Cannot specify both index and role.")
             self.add_for_role(record, role)
 
-    def add_at_index(self, record: Any, index: int):
+    def add_at_index(self, record: PyTree, index: int):
         if index < 0 or index >= len(self._writers):
             raise ValueError(f"Invalid writer index: {index}")
 
@@ -46,7 +48,7 @@ class OutputRecordCollector:
 
         self._writers[index].write(record)
 
-    def add_for_role(self, record: Any, role: str):
+    def add_for_role(self, record: PyTree, role: str):
         if role not in self._role_to_writer:
             raise ValueError(f"Invalid writer role: {role}")
 

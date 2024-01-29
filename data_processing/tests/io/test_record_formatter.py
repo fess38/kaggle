@@ -1,44 +1,107 @@
 from pathlib import Path
 
 import pytest
-from fess38.data_processing.io.record_formatter import CsvRecordFormatter
+from fess38.data_processing.io.record_formatter import (
+    CsvRecordFormatter,
+    JsonlRecordFormatter,
+    ParquetRecordFormatter,
+)
+from fess38.util.typing import PyTree
 
 
 @pytest.mark.parametrize(
-    ["csv_str", "params", "expected"],
+    ("params", "records"),
     [
-        ("a,b\n1,c", {"paths_to_move": {"a": "z"}}, {"z": 1, "b": "c"}),
-        ("a,b\n2,d", {"paths_to_move": {"b": "y"}}, {"a": 2, "y": "d"}),
-        ("a,b\n2,d", {"paths_to_delete": {"a"}}, {"b": "d"}),
-        ("a,b\n2,d", {"columns_to_keep": {"a"}}, {"a": 2}),
         (
-            "a\tb\td\n1\tc\tp",
             {
                 "skip_rows": 1,
-                "column_names": ["z", "x", "c"],
+                "column_names": ["a", "b"],
                 "delimiter": "\t",
-                "include_columns": ["x", "c"],
+                "include_columns": ["a", "b"],
             },
-            {"x": "c", "c": "p"},
+            [{"a": 1, "b": "c"}, {"a": 2, "b": "d"}],
         ),
         (
-            "a\tb\td\n2\t\tf",
             {
                 "skip_rows": 1,
-                "column_names": ["z", "x", "c"],
+                "column_names": ["a", "b"],
                 "delimiter": "\t",
-                "include_columns": ["z", "x"],
+                "include_columns": ["a", "b"],
             },
-            {"z": 2, "x": None},
+            [{"a": 1, "b": "c"}, {"a": 2, "b": "d"}],
         ),
     ],
 )
-def test_csv_record_formatter(
-    csv_str: str, params: dict, expected: dict, tmp_path: Path
-):
-    csv_file = tmp_path / "foo.csv"
-    with csv_file.open("wt") as f:
-        f.write(csv_str)
+def test_csv_record_formatter(tmp_path: Path, params: dict, records: list[PyTree]):
+    file = tmp_path / "foo.csv"
+    record_formatter = CsvRecordFormatter(**params)
+    with file.open(record_formatter.write_mode) as f:
+        record_formatter.write(f, records)
 
-    lines = list(CsvRecordFormatter(**params).read(csv_file))
-    assert lines[0] == expected
+    with file.open(record_formatter.read_mode) as f:
+        assert list(record_formatter.read(f)) == records
+
+
+@pytest.mark.parametrize(
+    ("params", "records"),
+    [
+        ({}, [{"a": 1, "b": {"c": "d"}}]),
+        ({}, [{"a": 1, "b": {"c": "d"}}, {"a": 2, "b": "d"}]),
+    ],
+)
+def test_jsonl_record_formatter(tmp_path: Path, params: dict, records: list[PyTree]):
+    file = tmp_path / "foo.jsonl"
+    record_formatter = JsonlRecordFormatter(**params)
+    with file.open(record_formatter.write_mode) as f:
+        record_formatter.write(f, records)
+
+    with file.open(record_formatter.read_mode) as f:
+        assert list(record_formatter.read(f)) == records
+
+
+@pytest.mark.parametrize(
+    ("params", "records", "expected"),
+    [
+        ({"paths_to_delete_on_read": {"b"}}, [{"a": 1, "b": 2}], [{"a": 1}]),
+        ({"paths_to_delete_on_write": {"b"}}, [{"a": 1, "b": 2}], [{"a": 1}]),
+        (
+            {"paths_to_move_on_read": {"b": "c.d"}},
+            [{"a": 1, "b": 2}],
+            [{"a": 1, "c": {"d": 2}}],
+        ),
+        (
+            {"paths_to_move_on_write": {"b": "c.d"}},
+            [{"a": 1, "b": 2}],
+            [{"a": 1, "c": {"d": 2}}],
+        ),
+        ({"columns_to_keep_on_read": {"b"}}, [{"a": 1, "b": 2}], [{"b": 2}]),
+        ({"columns_to_keep_on_write": {"b"}}, [{"a": 1, "b": 2}], [{"b": 2}]),
+    ],
+)
+def test_base_record_formatter(
+    tmp_path: Path, params: dict, records: list[PyTree], expected: list[PyTree]
+):
+    file = tmp_path / "foo.jsonl"
+    record_formatter = JsonlRecordFormatter(**params)
+    with file.open(record_formatter.write_mode) as f:
+        record_formatter.write(f, records)
+
+    with file.open(record_formatter.read_mode) as f:
+        assert list(record_formatter.read(f)) == expected
+
+
+@pytest.mark.parametrize(
+    ("params", "records"),
+    [
+        ({}, [{"a": 1, "b": "q"}]),
+        ({}, [{"a": 1, "b": "q"}, {"a": 2, "b": "w"}]),
+    ],
+)
+def test_parquet_record_formatter(tmp_path: Path, params: dict, records: list[PyTree]):
+    file = tmp_path / "foo.parquet"
+    record_formatter = ParquetRecordFormatter(**params)
+    with file.open(record_formatter.write_mode) as f:
+        record_formatter.write(f, records)
+
+    with file.open(record_formatter.read_mode) as f:
+        assert list(record_formatter.read(f)) == records

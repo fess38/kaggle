@@ -19,15 +19,18 @@ from pyarrow import csv
 class RecordFormatterBase(ConfigBase, abc.ABC):
     read_mode: str = "rb"
     write_mode: str = "wb"
-    paths_to_delete: set[PyTreePath] = None
-    paths_to_move: dict[PyTreePath, PyTreePath] = None
-    columns_to_keep: set[str] = None
+    paths_to_delete_on_read: set[PyTreePath] = None
+    paths_to_delete_on_write: set[PyTreePath] = None
+    paths_to_move_on_read: dict[PyTreePath, PyTreePath] = None
+    paths_to_move_on_write: dict[PyTreePath, PyTreePath] = None
+    columns_to_keep_on_read: set[str] = None
+    columns_to_keep_on_write: set[str] = None
 
     def read(self, f: IO) -> Iterator[PyTree]:
         for record in self._read_impl(f):
-            self._delete_paths(record)
-            self._move_paths(record)
-            self._keep_only_columns(record)
+            self._delete_paths(record, self.paths_to_delete_on_read)
+            self._move_paths(record, self.paths_to_move_on_read)
+            self._keep_only_columns(record, self.columns_to_keep_on_read)
             yield record
 
     @abc.abstractmethod
@@ -37,9 +40,9 @@ class RecordFormatterBase(ConfigBase, abc.ABC):
     def write(self, f: IO, records: Iterable[PyTree]):
         def _post_process_records() -> Iterable[PyTree]:
             for record in records:
-                self._delete_paths(record)
-                self._move_paths(record)
-                self._keep_only_columns(record)
+                self._delete_paths(record, self.paths_to_delete_on_write)
+                self._move_paths(record, self.paths_to_move_on_write)
+                self._keep_only_columns(record, self.columns_to_keep_on_write)
                 yield record
 
         self._write_impl(f, _post_process_records())
@@ -48,22 +51,22 @@ class RecordFormatterBase(ConfigBase, abc.ABC):
     def _write_impl(self, f: IO, records: Iterable[PyTree]):
         ...
 
-    def _delete_paths(self, record: PyTree):
-        if self.paths_to_delete:
-            for path_to_delete in self.paths_to_delete:
+    def _delete_paths(self, record: PyTree, paths_to_delete: set[PyTreePath]):
+        if paths_to_delete:
+            for path_to_delete in paths_to_delete:
                 delete_field_by_path(record, path_to_delete)
 
-    def _move_paths(self, record: PyTree):
-        if self.paths_to_move:
-            for old_path, new_path in self.paths_to_move.items():
+    def _move_paths(self, record: PyTree, paths_to_move: dict[PyTreePath, PyTreePath]):
+        if paths_to_move:
+            for old_path, new_path in paths_to_move.items():
                 value = get_field_by_path_safe(record, old_path)[1]
                 delete_field_by_path(record, old_path)
                 set_field_by_path(record, new_path, value)
 
-    def _keep_only_columns(self, record: PyTree):
-        if self.columns_to_keep:
+    def _keep_only_columns(self, record: PyTree, columns_to_keep: set[str]):
+        if columns_to_keep:
             for column in list(record.keys()):
-                if column not in self.columns_to_keep:
+                if column not in columns_to_keep:
                     delete_field_by_path(record, column)
 
 

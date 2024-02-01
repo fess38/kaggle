@@ -22,14 +22,6 @@ class MapperChainMapOpConfig(MapOpConfigBase):
     mappers: list[MapperConfig]
 
 
-@operation_library(
-    "fess38.data_processing.operation.mapper.eval_expression.EvalExpressionMapOp"
-)
-class EvalExpressionMapOpConfig(MapOpConfigBase):
-    type: Literal["eval_expression"] = "eval_expression"
-    expression: str
-
-
 @operation_library("fess38.data_processing.operation.mapper.merge.MergeMapOp")
 class MergeOpMapConfig(MapOpConfigBase):
     type: Literal["merge"] = "merge"

@@ -15,6 +15,7 @@ class LinearRegressionTrainOpConfig(TrainOpConfigBase):
 @operation_library("fess38.training.linear.LinearRegressionInferenceOp")
 class LinearRegressionInferenceOpConfig(MapOpConfigBase):
     type: Literal["linear_regression_inference"] = "linear_regression_inference"
+    batch_size: int = 128
 
 
 @operation_library("fess38.training.linear.LogisticRegressionTrainOp")
@@ -26,3 +27,4 @@ class LogisticRegressionTrainOpConfig(TrainOpConfigBase):
 @operation_library("fess38.training.linear.LogisticRegressionInferenceOp")
 class LogisticRegressionInferenceOpConfig(MapOpConfigBase):
     type: Literal["logistic_regression_inference"] = "logistic_regression_inference"
+    batch_size: int = 128

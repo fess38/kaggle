@@ -1,6 +1,7 @@
 from typing import Iterable
 
 import joblib
+import more_itertools
 from fess38.data_processing.operation.mapper.base import MapOpBase
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 
@@ -19,8 +20,7 @@ class LogisticRegressionTrainOp(TrainOpBase):
 
     def _train_fn(self, records: Iterable[SampleRecord], role: str | None):
         model = self._model_name_to_cls[self.config.model_name](
-            random_state=self.config.random_state,
-            **self.config.kwargs,
+            random_state=self.config.random_state, **self.config.kwargs
         )
 
         records = list(records)
@@ -42,16 +42,18 @@ class LogisticRegressionInferenceOp(MapOpBase):
         super().__init__(config, self._map_fn)
 
     def _map_fn(
-        self,
-        records: Iterable[SampleRecord],
-        role: str | None,
+        self, records: Iterable[SampleRecord], role: str | None
     ) -> Iterable[PredictionRecord]:
         model = joblib.load(self.config.input_files["model.bin"])
-        records = list(records)
-        for record in records:
-            predictions = model.predict_proba([record.num_features]).tolist()[0]
-            yield PredictionRecord(
-                id=record.id,
-                labels=record.labels,
-                predictions=predictions,
-            )
+
+        for batch in more_itertools.batched(records, self.config.batch_size):
+            batch = list(batch)
+            features = [record.num_features for record in batch]
+            predictions = model.predict_proba(features).tolist()
+
+            for record, predictions in zip(batch, predictions):
+                yield PredictionRecord(
+                    id=record.id,
+                    labels=record.labels,
+                    predictions=predictions,
+                )

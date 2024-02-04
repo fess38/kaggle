@@ -1,6 +1,7 @@
 from typing import Iterable
 
 import joblib
+import more_itertools
 from fess38.data_processing.operation.mapper.base import MapOpBase
 from sklearn.linear_model import LinearRegression, SGDRegressor
 
@@ -11,13 +12,13 @@ from .config import LinearRegressionInferenceOpConfig, LinearRegressionTrainOpCo
 
 class LinearRegressionTrainOp(TrainOpBase):
     def __init__(self, config: LinearRegressionTrainOpConfig):
-        super().__init__(config, self._train_fn)
+        super().__init__(config, self._consume_fn)
         self._model_name_to_cls = {
             "LinearRegression": LinearRegression,
             "SGDRegressor": SGDRegressor,
         }
 
-    def _train_fn(self, records: Iterable[SampleRecord], role: str | None):
+    def _consume_fn(self, records: Iterable[SampleRecord], role: str | None):
         model = self._model_name_to_cls[self.config.model_name](**self.config.kwargs)
 
         records = list(records)
@@ -44,11 +45,15 @@ class LinearRegressionInferenceOp(MapOpBase):
         role: str | None,
     ) -> Iterable[PredictionRecord]:
         model = joblib.load(self.config.input_files["model.bin"])
-        records = list(records)
-        for record in records:
-            predictions = model.predict([record.num_features]).tolist()
-            yield PredictionRecord(
-                id=record.id,
-                labels=record.labels,
-                predictions=predictions,
-            )
+
+        for batch in more_itertools.batched(records, self.config.batch_size):
+            batch = list(batch)
+            features = [record.num_features for record in batch]
+            predictions = model.predict(features).tolist()
+
+            for record, prediction in zip(batch, predictions):
+                yield PredictionRecord(
+                    id=record.id,
+                    labels=record.labels,
+                    predictions=[prediction],
+                )

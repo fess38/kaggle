@@ -8,7 +8,6 @@ from fess38.training.linear.logistic_regression import (
 )
 from fess38.training.types import SampleRecord
 from fess38.util.tests import create_faker
-from fess38.util.typing import PyTree
 
 FAKE = create_faker()
 
@@ -33,15 +32,17 @@ FAKE = create_faker()
                         FAKE.random_choices,
                         {"elements": [True, False], "length": 1},
                     ),
-                    "num_features": (FAKE.rand, {"size": [100]}),
+                    "num_features": (FAKE.rand, {"size": 100}),
                 },
+                SampleRecord,
             ),
             FAKE.records(
                 100,
                 {
                     "id": (FAKE.pyint, {}),
-                    "num_features": (FAKE.rand, {"size": [100]}),
+                    "num_features": (FAKE.rand, {"size": 100}),
                 },
+                SampleRecord,
             ),
             48.49041,
         ),
@@ -60,15 +61,17 @@ FAKE = create_faker()
                         FAKE.random_choices,
                         {"elements": [True, False], "length": 1},
                     ),
-                    "num_features": (FAKE.rand, {"size": [100]}),
+                    "num_features": (FAKE.rand, {"size": 100}),
                 },
+                SampleRecord,
             ),
             FAKE.records(
                 100,
                 {
                     "id": (FAKE.pyint, {}),
-                    "num_features": (FAKE.rand, {"size": [100]}),
+                    "num_features": (FAKE.rand, {"size": 100}),
                 },
+                SampleRecord,
             ),
             41.34718,
         ),
@@ -78,20 +81,18 @@ def test_linear_regression(
     tmp_path: Path,
     train_config: dict,
     inference_config: dict,
-    train_records: list[PyTree],
-    inference_records: list[PyTree],
+    train_records: list[SampleRecord],
+    inference_records: list[SampleRecord],
     expected: float,
 ):
     train_config.setdefault("output_files", {})
     train_config["output_files"]["model.bin"] = str(tmp_path / "model.bin")
     train_op = create_dummy_op(train_config, LogisticRegressionTrainOp)
-    train_records = map(lambda x: SampleRecord(**x), train_records)
     train_op._consume_fn(train_records, None)
 
     inference_config.setdefault("input_files", {})
     inference_config["input_files"]["model.bin"] = str(tmp_path / "model.bin")
     inference_op = create_dummy_op(inference_config, LogisticRegressionInferenceOp)
-    inference_records = map(lambda x: SampleRecord(**x), inference_records)
 
     actual = sum(
         map(lambda x: x.predictions[0], inference_op._map_fn(inference_records, None))

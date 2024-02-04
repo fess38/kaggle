@@ -11,6 +11,7 @@ from sklearn.metrics import (
     precision_recall_fscore_support,
     r2_score,
     roc_auc_score,
+    roc_curve,
 )
 
 from .config import MetricCalculationConsumeOpConfig
@@ -28,6 +29,7 @@ class MetricCalculationConsumeOp(ConsumeOpBase):
             "f1": self._f1,
             "roc_auc": self._roc_auc_score,
             "r2": self._r2,
+            "max_accuracy_threshold": self._max_accuracy_threshold,
             "precision_recall_curve": self._precision_recall_curve,
             "roc_curve": self._roc_curve,
             "confusion_matrix": self._confusion_matrix,
@@ -94,6 +96,31 @@ class MetricCalculationConsumeOp(ConsumeOpBase):
             sample_weight=[record.sample_weight or 1 for record in records],
             multioutput=metric_config.get("multioutput", "uniform_average"),
         )
+
+    def _max_accuracy_threshold(
+        self, metric_config: dict, records: list[PredictionRecord]
+    ):
+        y_true = [record.labels[0] for record in records]
+        y_score = [record.predictions[1] for record in records]
+        sample_weight = [record.sample_weight or 1 for record in records]
+        _, _, thresholds = roc_curve(
+            y_true=y_true,
+            y_score=y_score,
+            sample_weight=sample_weight,
+        )
+        thresholds = np.nan_to_num(thresholds, posinf=0, neginf=0)
+
+        max_accuracy_index = np.argmax(
+            [
+                accuracy_score(
+                    y_true=y_true,
+                    y_pred=(y_score >= threshold).astype(int),
+                    sample_weight=sample_weight,
+                )
+                for threshold in thresholds
+            ]
+        )
+        wandb.summary["max_accuracy_threshold"] = thresholds[max_accuracy_index]
 
     def _precision_recall_curve(
         self, metric_config: dict, records: list[PredictionRecord]

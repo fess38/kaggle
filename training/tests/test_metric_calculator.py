@@ -29,6 +29,7 @@ def set_env_vars(monkeypatch, tmp_path: Path):
                     "recall": {"threshold": 0.0},
                     "f1": {"threshold": 0.0},
                     "roc_auc": {},
+                    "max_accuracy_threshold": {},
                     "precision_recall_curve": {},
                     "roc_curve": {},
                     "confusion_matrix": {},
@@ -56,6 +57,7 @@ def set_env_vars(monkeypatch, tmp_path: Path):
                 "recall": 1.0,
                 "f1": 0.946,
                 "roc_auc": 0.478,
+                "max_accuracy_threshold": 0,
             },
         ),
         (
@@ -66,6 +68,7 @@ def set_env_vars(monkeypatch, tmp_path: Path):
                     "recall": {"threshold": 1.0},
                     "f1": {"threshold": 1.0},
                     "roc_auc": {},
+                    "max_accuracy_threshold": {},
                     "precision_recall_curve": {},
                     "roc_curve": {},
                     "confusion_matrix": {},
@@ -93,6 +96,7 @@ def set_env_vars(monkeypatch, tmp_path: Path):
                 "recall": 0.0,
                 "f1": 0.0,
                 "roc_auc": 0.486,
+                "max_accuracy_threshold": 0,
             },
         ),
         (
@@ -103,6 +107,7 @@ def set_env_vars(monkeypatch, tmp_path: Path):
                     "recall": {"threshold": 0.5},
                     "f1": {"threshold": 0.5},
                     "roc_auc": {},
+                    "max_accuracy_threshold": {},
                     "precision_recall_curve": {},
                     "roc_curve": {},
                     "confusion_matrix": {},
@@ -115,7 +120,7 @@ def set_env_vars(monkeypatch, tmp_path: Path):
                     "labels": (
                         FAKE.random_elements,
                         {
-                            "elements": OrderedDict({0: 0.1, 1: 0.9}),
+                            "elements": OrderedDict({0: 0.5, 1: 0.5}),
                             "length": 1,
                             "use_weighting": True,
                         },
@@ -125,11 +130,12 @@ def set_env_vars(monkeypatch, tmp_path: Path):
                 PredictionRecord,
             ),
             {
-                "accuracy": 0.488,
-                "precision": 0.895,
-                "recall": 0.492,
-                "f1": 0.635,
-                "roc_auc": 0.484,
+                "accuracy": 0.492,
+                "precision": 0.482,
+                "recall": 0.491,
+                "f1": 0.486,
+                "roc_auc": 0.489,
+                "max_accuracy_threshold": 0.992,
             },
         ),
         (

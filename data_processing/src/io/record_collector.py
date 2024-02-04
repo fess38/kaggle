@@ -19,7 +19,7 @@ class OutputRecordCollector:
         if len(outputs) != len(writers):
             raise ValueError(
                 f"Number of outputs ({len(outputs)}) does not match number of writers"
-                f" ({len(writers)})."
+                f" ({len(writers)})"
             )
 
         self._outputs = outputs
@@ -28,7 +28,7 @@ class OutputRecordCollector:
         for output, writer in zip(outputs, writers):
             if output.role is not None:
                 if output.role in self._role_to_writer:
-                    raise ValueError(f"Multiple writers found for role {output.role}.")
+                    raise ValueError(f"Multiple writers found for role {output.role}")
                 self._role_to_writer[output.role] = writer
 
     def add(self, record: PyTree, index=None, role=None):
@@ -36,7 +36,7 @@ class OutputRecordCollector:
             self.add_at_index(record, index if index is not None else 0)
         else:
             if index is not None:
-                raise ValueError("Cannot specify both index and role.")
+                raise ValueError("Cannot specify both index and role")
             self.add_for_role(record, role)
 
     def add_at_index(self, record: PyTree, index: int):

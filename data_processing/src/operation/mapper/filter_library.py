@@ -14,6 +14,6 @@ def evaluate_expression(record: dict, expression: str) -> dict:
 def drop_empty(record: dict, path: PyTreePath) -> bool:
     value = get_field_by_path(path, record)
     if not isinstance(value, str):
-        raise ValueError(f"Field {format_path(path)} is not a string.")
+        raise ValueError(f"Field {format_path(path)} is not a string")
 
     return value is not None and value != ""

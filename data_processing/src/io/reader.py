@@ -47,5 +47,5 @@ def create_dataset_reader(
         return FileDatasetReader(dataset_reference)
 
     raise ValueError(
-        f"Unrecognized dataset reference type {type(dataset_reference).__name__}."
+        f"Unrecognized dataset reference type {type(dataset_reference).__name__}"
     )

@@ -16,10 +16,10 @@ class MapReduceOpBase(OpBase):
         reduce_fn: MapReduceReduceFn | MapReduceReduceAggregatorFn,
     ):
         if len(config.inputs) == 0:
-            raise ValueError("MapReduce op should have inputs.")
+            raise ValueError("MapReduce op should have inputs")
 
         if len(config.outputs) == 0:
-            raise ValueError("MapReduce op should have outputs.")
+            raise ValueError("MapReduce op should have outputs")
 
         super().__init__(config)
         self._map_fn = map_fn

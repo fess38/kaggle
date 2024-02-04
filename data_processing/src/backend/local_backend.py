@@ -56,12 +56,12 @@ class LocalBackend(BackendBase):
     ):
         logger.info(
             f"Running consume operation {config.name or type(config)} using local"
-            f" backend with {len(config.inputs)} inputs."
+            f" backend with {len(config.inputs)} inputs"
         )
 
         readers = self._create_readers(config)
         for input, reader in zip(config.inputs, readers):
-            logger.info(f"Running consume function on input <{input}>.")
+            logger.info(f"Running consume function on input <{input}>")
             self._run_consume_on_input(input, reader, consume_fn)
 
         self._close_readers(readers)
@@ -95,7 +95,7 @@ class LocalBackend(BackendBase):
         logger.info(
             f"Running produce operation {config.name or type(config)} using local"
             f" backend with {len(config.outputs)} outputs and {len(produce_fns)}"
-            " shards."
+            " shards"
         )
 
         writers = self._create_writers(config)
@@ -110,7 +110,7 @@ class LocalBackend(BackendBase):
     def run_map(self, config: MapOpConfigBase, map_fn: MapFn | MapAggregatorFn):
         logger.info(
             f"Running map operation {config.name or type(config)} using local backend"
-            f" with {len(config.inputs)} inputs and {len(config.outputs)} outputs."
+            f" with {len(config.inputs)} inputs and {len(config.outputs)} outputs"
         )
 
         readers = self._create_readers(config)
@@ -118,7 +118,7 @@ class LocalBackend(BackendBase):
         output_collector = OutputRecordCollector(config.outputs, writers)
 
         for input, reader in zip(config.inputs, readers):
-            logger.info(f"Running map function on input <{input}>.")
+            logger.info(f"Running map function on input <{input}>")
             self._run_map_for_input(input, reader, map_fn, output_collector)
 
         self._close_readers(readers)
@@ -157,7 +157,7 @@ class LocalBackend(BackendBase):
         logger.info(
             f"Running map-reduce operation {config.name or type(config)} using local"
             f" backend with {len(config.inputs)} inputs and {len(config.outputs)}"
-            " outputs."
+            " outputs"
         )
 
         readers = self._create_readers(config)
@@ -165,10 +165,10 @@ class LocalBackend(BackendBase):
 
         key_to_records = defaultdict(list)
         for input, reader in zip(config.inputs, readers):
-            logger.info(f"Running map-reduce map function on input <{input}>.")
+            logger.info(f"Running map-reduce map function on input <{input}>")
             self._run_map_reduce_map(input, reader, map_fn, key_to_records)
 
-        logger.info("Running map-reduce reduce function.")
+        logger.info("Running map-reduce reduce function")
         output_collector = OutputRecordCollector(config.outputs, writers)
         self._run_map_reduce_reduce(key_to_records, output_collector, reduce_fn)
 

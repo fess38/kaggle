@@ -12,12 +12,12 @@ class Registry:
         def _wrapper(what: Any) -> Any:
             if key in self._mapping:
                 raise ValueError(
-                    f"Name '{key}' is already registered in registry {self._name}."
+                    f"Name '{key}' is already registered in registry {self._name}"
                 )
 
             if what in self._inverse_mapping:
                 raise ValueError(
-                    f"Value '{what}' is already registered in registry {self._name}."
+                    f"Value '{what}' is already registered in registry {self._name}"
                 )
 
             self._mapping[key] = what
@@ -42,16 +42,14 @@ class Registry:
 
     def _get_by_key(self, key: str) -> Any:
         if key not in self._mapping:
-            raise ValueError(
-                f"Name '{key}' is not registered in registry {self._name}."
-            )
+            raise ValueError(f"Name '{key}' is not registered in registry {self._name}")
 
         return self._mapping[key]
 
     def _get_by_value(self, value: Any) -> Any:
         if value not in self._inverse_mapping:
             raise ValueError(
-                f"Name '{value}' is not registered in registry {self._name}."
+                f"Name '{value}' is not registered in registry {self._name}"
             )
 
         return self._inverse_mapping[value]

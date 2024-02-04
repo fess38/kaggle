@@ -24,7 +24,7 @@ def get_field_by_path_safe(tree: PyTree, path: PyTreePath) -> tuple[bool, Any]:
 def get_field_by_path(tree: PyTree, path: PyTreePath) -> Any:
     path_exists, value = get_field_by_path_safe(tree, path)
     if not path_exists:
-        raise ValueError(f"Path {format_path(path)} not found in the tree {tree}.")
+        raise ValueError(f"Path {format_path(path)} not found in the tree {tree}")
 
     return value
 

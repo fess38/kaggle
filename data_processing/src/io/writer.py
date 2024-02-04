@@ -47,7 +47,7 @@ class FileDatasetWriter(DatasetWriterBase, FileDatasetIOMixin):
         ):
             raise ValueError(
                 f"Output dataset '{self.data_path}' already exists and overwriting is"
-                " disabled."
+                " disabled"
             )
 
 
@@ -58,5 +58,5 @@ def create_dataset_writer(
         return FileDatasetWriter(dataset_reference)
 
     raise ValueError(
-        f"Unrecognized dataset reference type {type(dataset_reference).__name__}."
+        f"Unrecognized dataset reference type {type(dataset_reference).__name__}"
     )

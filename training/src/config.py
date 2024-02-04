@@ -2,6 +2,7 @@ from typing import Any, Literal
 
 from fess38.data_processing.operation import operation_library
 from fess38.data_processing.operation.config import ConsumeOpConfigBase, MapOpConfigBase
+from fess38.util.typing import PyTreePath
 
 
 class TrainOpConfigBase(ConsumeOpConfigBase):
@@ -12,7 +13,7 @@ class TrainOpConfigBase(ConsumeOpConfigBase):
 @operation_library("fess38.training.train_test_split.TrainTestSplitMapOp")
 class TrainTestSplitMapOpConfig(MapOpConfigBase):
     type: Literal["train_test_split"] = "train_test_split"
-    based_on: list[str]
+    based_on: list[PyTreePath]
     sampling_rate: float
 
 

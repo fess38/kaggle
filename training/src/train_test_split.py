@@ -1,9 +1,11 @@
 import random
-from typing import Any, Iterable
+from typing import Iterable
 
 from fess38.data_processing.io.record import OutputIterable, OutputRecord
 from fess38.data_processing.operation.mapper.base import MapOpBase
 from fess38.util.hashing import combine_hashes
+from fess38.util.pytree import get_field_by_path
+from fess38.util.typing import PyTree
 
 from .config import TrainTestSplitMapOpConfig
 
@@ -16,11 +18,13 @@ class TrainTestSplitMapOp(MapOpBase):
         self._validate_config(config)
         super().__init__(config, self._map_fn)
 
-    def _map_fn(self, records: Iterable[Any], role: str | None) -> OutputIterable:
+    def _map_fn(self, records: Iterable[PyTree], role: str | None) -> OutputIterable:
         for record in records:
             index = _TRAIN_INDEX
 
-            seed = combine_hashes(*(map(record.get, self.config.based_on)))
+            seed = combine_hashes(
+                *(get_field_by_path(record, path) for path in self.config.based_on)
+            )
             if random.Random(seed).random() < self.config.sampling_rate:
                 index = _TEST_INDEX
 

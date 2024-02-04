@@ -70,7 +70,7 @@ FAKE = create_faker()
                     "num_features": (FAKE.rand, {"size": [100]}),
                 },
             ),
-            41.34717,
+            41.34718,
         ),
     ],
 )

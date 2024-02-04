@@ -8,6 +8,7 @@ from fess38.data_processing.operation.consumer.base import ConsumeOpBase
 from fess38.util.wandb import wandb_init
 from sklearn.metrics import (
     accuracy_score,
+    precision_recall_curve,
     precision_recall_fscore_support,
     r2_score,
     roc_auc_score,
@@ -30,6 +31,7 @@ class MetricCalculationConsumeOp(ConsumeOpBase):
             "roc_auc": self._roc_auc_score,
             "r2": self._r2,
             "max_accuracy_threshold": self._max_accuracy_threshold,
+            "max_f1_threshold": self._max_f1_threshold,
             "precision_recall_curve": self._precision_recall_curve,
             "roc_curve": self._roc_curve,
             "confusion_matrix": self._confusion_matrix,
@@ -103,24 +105,42 @@ class MetricCalculationConsumeOp(ConsumeOpBase):
         y_true = [record.labels[0] for record in records]
         y_score = [record.predictions[1] for record in records]
         sample_weight = [record.sample_weight or 1 for record in records]
+
         _, _, thresholds = roc_curve(
             y_true=y_true,
             y_score=y_score,
             sample_weight=sample_weight,
         )
-        thresholds = np.nan_to_num(thresholds, posinf=0, neginf=0)
+        thresholds = np.nan_to_num(thresholds, posinf=0.0, neginf=0.0)
 
-        max_accuracy_index = np.argmax(
-            [
-                accuracy_score(
-                    y_true=y_true,
-                    y_pred=(y_score >= threshold).astype(int),
-                    sample_weight=sample_weight,
-                )
-                for threshold in thresholds
-            ]
-        )
+        accuracies = [
+            accuracy_score(
+                y_true=y_true,
+                y_pred=(y_score >= threshold).astype(int),
+                sample_weight=sample_weight,
+            )
+            for threshold in thresholds
+        ]
+        max_accuracy_index = np.argmax(accuracies)
+
         wandb.summary["max_accuracy_threshold"] = thresholds[max_accuracy_index]
+        wandb.summary["max_accuracy"] = accuracies[max_accuracy_index]
+
+    def _max_f1_threshold(self, metric_config: dict, records: list[PredictionRecord]):
+        precision, recall, thresholds = precision_recall_curve(
+            y_true=[record.labels[0] for record in records],
+            probas_pred=[record.predictions[1] for record in records],
+            sample_weight=[record.sample_weight or 1 for record in records],
+            pos_label=metric_config.get("pos_label"),
+        )
+        thresholds = np.nan_to_num(thresholds, posinf=0.0, neginf=0.0)
+
+        f1_scores = 2 * (precision * recall) / (precision + recall)
+        f1_scores = np.nan_to_num(f1_scores, posinf=0.0, neginf=0.0)
+        max_f1_index = np.argmax(f1_scores)
+
+        wandb.summary["max_f1_threshold"] = thresholds[max_f1_index]
+        wandb.summary["max_f1"] = f1_scores[max_f1_index]
 
     def _precision_recall_curve(
         self, metric_config: dict, records: list[PredictionRecord]

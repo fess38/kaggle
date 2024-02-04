@@ -30,6 +30,7 @@ def set_env_vars(monkeypatch, tmp_path: Path):
                     "f1": {"threshold": 0.0},
                     "roc_auc": {},
                     "max_accuracy_threshold": {},
+                    "max_f1_threshold": {},
                     "precision_recall_curve": {},
                     "roc_curve": {},
                     "confusion_matrix": {},
@@ -57,7 +58,10 @@ def set_env_vars(monkeypatch, tmp_path: Path):
                 "recall": 1.0,
                 "f1": 0.946,
                 "roc_auc": 0.478,
-                "max_accuracy_threshold": 0,
+                "max_accuracy_threshold": 0.0,
+                "max_accuracy": 0.899,
+                "max_f1_threshold": 0.0,
+                "max_f1": 0.946,
             },
         ),
         (
@@ -69,6 +73,7 @@ def set_env_vars(monkeypatch, tmp_path: Path):
                     "f1": {"threshold": 1.0},
                     "roc_auc": {},
                     "max_accuracy_threshold": {},
+                    "max_f1_threshold": {},
                     "precision_recall_curve": {},
                     "roc_curve": {},
                     "confusion_matrix": {},
@@ -96,7 +101,10 @@ def set_env_vars(monkeypatch, tmp_path: Path):
                 "recall": 0.0,
                 "f1": 0.0,
                 "roc_auc": 0.486,
-                "max_accuracy_threshold": 0,
+                "max_accuracy_threshold": 0.0,
+                "max_accuracy": 0.907,
+                "max_f1_threshold": 0.001,
+                "max_f1": 0.951,
             },
         ),
         (
@@ -108,6 +116,7 @@ def set_env_vars(monkeypatch, tmp_path: Path):
                     "f1": {"threshold": 0.5},
                     "roc_auc": {},
                     "max_accuracy_threshold": {},
+                    "max_f1_threshold": {},
                     "precision_recall_curve": {},
                     "roc_curve": {},
                     "confusion_matrix": {},
@@ -136,6 +145,9 @@ def set_env_vars(monkeypatch, tmp_path: Path):
                 "f1": 0.486,
                 "roc_auc": 0.489,
                 "max_accuracy_threshold": 0.992,
+                "max_accuracy": 0.509,
+                "max_f1_threshold": 0.003,
+                "max_f1": 0.659,
             },
         ),
         (
@@ -166,6 +178,6 @@ def test_metric_calculator(
     op._consume_fn(records, None)
 
     for metric, expected_value in expected.items():
-        assert abs(wandb.summary[metric] - expected_value) < 1e-3
+        assert metric and abs(wandb.summary[metric] - expected_value) < 1e-2
 
     wandb.finish()

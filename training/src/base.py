@@ -8,6 +8,6 @@ class TrainOpBase(ConsumeOpBase):
     def __init__(
         self,
         config: TrainOpConfigBase,
-        train_fn: ConsumeAggregatorFn,
+        consume_fn: ConsumeAggregatorFn,
     ):
-        super().__init__(config, train_fn)
+        super().__init__(config, consume_fn)

@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class SampleRecord(BaseModel, extra="forbid"):
-    id: str
+    id: int | str | bytes
     labels: list[int | float] | None = None
     sample_weight: float | None = None
     num_features: list[float] | None = None
@@ -10,7 +10,7 @@ class SampleRecord(BaseModel, extra="forbid"):
 
 
 class PredictionRecord(BaseModel, extra="forbid"):
-    id: str
+    id: int | str | bytes
     labels: list[int | float] | None = None
     sample_weight: float | None = None
     predictions: list[float]

@@ -4,7 +4,7 @@ from typing import OrderedDict
 import pytest
 import wandb
 from fess38.data_processing.operation.internal import create_dummy_op
-from fess38.training.metric_calculator import MetricCalculationConsumeOp
+from fess38.training.metrics.metric_calculator import MetricCalculationConsumeOp
 from fess38.training.types import PredictionRecord
 from fess38.util.tests import create_faker
 
@@ -23,18 +23,18 @@ def set_env_vars(monkeypatch, tmp_path: Path):
     [
         (
             {
-                "metric_configs": {
-                    "accuracy": {"threshold": 0.0},
-                    "precision": {"threshold": 0.0},
-                    "recall": {"threshold": 0.0},
-                    "f1": {"threshold": 0.0},
-                    "roc_auc": {},
-                    "max_accuracy_threshold": {},
-                    "max_f1_threshold": {},
-                    "precision_recall_curve": {},
-                    "roc_curve": {},
-                    "confusion_matrix": {},
-                }
+                "metric_configs": [
+                    {"type": "accuracy", "threshold": 0.0},
+                    {"type": "precision", "threshold": 0.0},
+                    {"type": "recall", "threshold": 0.0},
+                    {"type": "f1", "threshold": 0.0},
+                    {"type": "roc_auc"},
+                    {"type": "max_accuracy_threshold"},
+                    {"type": "max_f1_threshold"},
+                    {"type": "precision_recall_curve"},
+                    {"type": "roc_curve"},
+                    {"type": "confusion_matrix"},
+                ],
             },
             FAKE.records(
                 1000,
@@ -66,18 +66,18 @@ def set_env_vars(monkeypatch, tmp_path: Path):
         ),
         (
             {
-                "metric_configs": {
-                    "accuracy": {"threshold": 1.0},
-                    "precision": {"threshold": 1.0},
-                    "recall": {"threshold": 1.0},
-                    "f1": {"threshold": 1.0},
-                    "roc_auc": {},
-                    "max_accuracy_threshold": {},
-                    "max_f1_threshold": {},
-                    "precision_recall_curve": {},
-                    "roc_curve": {},
-                    "confusion_matrix": {},
-                }
+                "metric_configs": [
+                    {"type": "accuracy", "threshold": 1.0},
+                    {"type": "precision", "threshold": 1.0},
+                    {"type": "recall", "threshold": 1.0},
+                    {"type": "f1", "threshold": 1.0},
+                    {"type": "roc_auc"},
+                    {"type": "max_accuracy_threshold"},
+                    {"type": "max_f1_threshold"},
+                    {"type": "precision_recall_curve"},
+                    {"type": "roc_curve"},
+                    {"type": "confusion_matrix"},
+                ],
             },
             FAKE.records(
                 1000,
@@ -109,18 +109,18 @@ def set_env_vars(monkeypatch, tmp_path: Path):
         ),
         (
             {
-                "metric_configs": {
-                    "accuracy": {"threshold": 0.5},
-                    "precision": {"threshold": 0.5},
-                    "recall": {"threshold": 0.5},
-                    "f1": {"threshold": 0.5},
-                    "roc_auc": {},
-                    "max_accuracy_threshold": {},
-                    "max_f1_threshold": {},
-                    "precision_recall_curve": {},
-                    "roc_curve": {},
-                    "confusion_matrix": {},
-                }
+                "metric_configs": [
+                    {"type": "accuracy", "threshold": 0.5},
+                    {"type": "precision", "threshold": 0.5},
+                    {"type": "recall", "threshold": 0.5},
+                    {"type": "f1", "threshold": 0.5},
+                    {"type": "roc_auc"},
+                    {"type": "max_accuracy_threshold"},
+                    {"type": "max_f1_threshold"},
+                    {"type": "precision_recall_curve"},
+                    {"type": "roc_curve"},
+                    {"type": "confusion_matrix"},
+                ],
             },
             FAKE.records(
                 1000,
@@ -151,7 +151,7 @@ def set_env_vars(monkeypatch, tmp_path: Path):
             },
         ),
         (
-            {"metric_configs": {"r2": {}}},
+            {"metric_configs": [{"type": "r2"}]},
             FAKE.records(
                 1000,
                 {

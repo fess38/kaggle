@@ -26,4 +26,9 @@ class MapReduceOpBase(OpBase):
         self._reduce_fn = reduce_fn
 
     def run(self):
-        self._backend.run_map_reduce(self.config, self._map_fn, self._reduce_fn)
+        self._backend.run_map_reduce(
+            config=self.config,
+            map_fn=self._map_fn,
+            reduce_fn=self._reduce_fn,
+            instruction_configs=self.backend_instruction_configs(),
+        )

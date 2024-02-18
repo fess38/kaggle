@@ -5,6 +5,8 @@ from typing import Any, Callable, Iterable, Sequence
 import tqdm
 from fess38.util.reflection import find_class
 
+from ..backend.instruction.config import BackendInstructionConfig
+from ..backend.instruction.instruction_library import execute_instructions
 from ..io.reader import DatasetReaderBase, InputDatasetReference, create_dataset_reader
 from ..io.record_collector import OutputRecordCollector
 from ..io.writer import DatasetWriterBase, create_dataset_writer
@@ -42,23 +44,29 @@ class LocalBackend(BackendBase):
     def __init__(self, config: LocalBackendConfig):
         self._config = config
 
-    def run(self, config: RunOpConfigBase, run_fn: RunFn):
-        logger.info(
-            f"Running run operation {config.name or type(config)} using local backend"
-        )
+    def run(
+        self,
+        config: RunOpConfigBase,
+        run_fn: RunFn,
+        instruction_configs: list[BackendInstructionConfig],
+    ):
+        logger.info(f"Running run operation '{type(config)}'")
 
+        config = execute_instructions(config, instruction_configs)
         run_fn()
 
     def run_consume(
         self,
         config: ConsumeOpConfigBase,
         consume_fn: ConsumeFn | ConsumeAggregatorFn,
+        instruction_configs: list[BackendInstructionConfig],
     ):
         logger.info(
-            f"Running consume operation {config.name or type(config)} using local"
-            f" backend with {len(config.inputs)} inputs"
+            f"Running consume operation '{type(config)}' with {len(config.inputs)} "
+            " inputs"
         )
 
+        config = execute_instructions(config, instruction_configs)
         readers = self._create_readers(config)
         for input, reader in zip(config.inputs, readers):
             logger.info(f"Running consume function on input <{input}>")
@@ -91,13 +99,14 @@ class LocalBackend(BackendBase):
         self,
         config: ProduceOpConfigBase,
         produce_fns: Sequence[ProduceFn],
+        instruction_configs: list[BackendInstructionConfig],
     ):
         logger.info(
-            f"Running produce operation {config.name or type(config)} using local"
-            f" backend with {len(config.outputs)} outputs and {len(produce_fns)}"
-            " shards"
+            f"Running produce operation '{type(config)}' with {len(config.outputs)} "
+            f" outputs and {len(produce_fns)} shards"
         )
 
+        config = execute_instructions(config, instruction_configs)
         writers = self._create_writers(config)
 
         output_collector = OutputRecordCollector(config.outputs, writers)
@@ -107,12 +116,18 @@ class LocalBackend(BackendBase):
 
         self._close_writers(writers)
 
-    def run_map(self, config: MapOpConfigBase, map_fn: MapFn | MapAggregatorFn):
+    def run_map(
+        self,
+        config: MapOpConfigBase,
+        map_fn: MapFn | MapAggregatorFn,
+        instruction_configs: list[BackendInstructionConfig],
+    ):
         logger.info(
-            f"Running map operation {config.name or type(config)} using local backend"
-            f" with {len(config.inputs)} inputs and {len(config.outputs)} outputs"
+            f"Running map operation '{type(config)}' with {len(config.inputs)} inputs"
+            f" and {len(config.outputs)} outputs"
         )
 
+        config = execute_instructions(config, instruction_configs)
         readers = self._create_readers(config)
         writers = self._create_writers(config)
         output_collector = OutputRecordCollector(config.outputs, writers)
@@ -153,13 +168,14 @@ class LocalBackend(BackendBase):
         config: MapReduceOpConfigBase,
         map_fn: MapReduceMapFn | MapReduceMapAggregatorFn,
         reduce_fn: MapReduceReduceFn | MapReduceReduceAggregatorFn,
+        instruction_configs: list[BackendInstructionConfig],
     ):
         logger.info(
-            f"Running map-reduce operation {config.name or type(config)} using local"
-            f" backend with {len(config.inputs)} inputs and {len(config.outputs)}"
-            " outputs"
+            f"Running map-reduce operation '{type(config)}'"
+            f" with {len(config.inputs)} inputs and {len(config.outputs)} outputs"
         )
 
+        config = execute_instructions(config, instruction_configs)
         readers = self._create_readers(config)
         writers = self._create_writers(config)
 

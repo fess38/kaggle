@@ -17,4 +17,8 @@ class ProduceOpBase(OpBase):
         self._produce_fns = produce_fns
 
     def run(self):
-        self._backend.run_produce(self.config, self._produce_fns)
+        self._backend.run_produce(
+            config=self.config,
+            produce_fns=self._produce_fns,
+            instruction_configs=self.backend_instruction_configs(),
+        )

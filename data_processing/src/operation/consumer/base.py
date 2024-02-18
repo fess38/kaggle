@@ -17,4 +17,8 @@ class ConsumeOpBase(OpBase):
         self._consume_fn = consume_fn
 
     def run(self):
-        self._backend.run_consume(self.config, self._consume_fn)
+        self._backend.run_consume(
+            config=self.config,
+            consume_fn=self._consume_fn,
+            instruction_configs=self.backend_instruction_configs(),
+        )

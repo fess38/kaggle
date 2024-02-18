@@ -132,7 +132,7 @@ def max_f1_threshold(
     )
     thresholds = np.nan_to_num(thresholds, posinf=0.0, neginf=0.0)
 
-    f1_scores = 2 * (precision * recall) / (precision + recall)
+    f1_scores = 2 * (precision * recall) / (precision + recall + 1e-9)
     f1_scores = np.nan_to_num(f1_scores, posinf=0.0, neginf=0.0)
     max_f1_index = np.argmax(f1_scores)
 

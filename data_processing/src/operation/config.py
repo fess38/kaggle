@@ -1,33 +1,36 @@
 from fess38.util.config import ConfigBase
 
-from ..backend.config import BackendConfig, LocalBackendConfig
-from ..io.dataset_reference import InputDatasetReference, OutputDatasetReference
+from ..backend.config import (
+    BackendConfig,
+    ConsumeBackendOpConfig,
+    LocalBackendConfig,
+    MapBackendOpConfig,
+    MapReduceBackendOpConfig,
+    ProduceBackendOpConfig,
+    RunBackendOpConfig,
+)
 
 
 class OpConfigBase(ConfigBase):
     name: str  # set automatically
     backend: BackendConfig = LocalBackendConfig()
-    input_files: dict[str, str] = {}
-    output_files: dict[str, str] = {}
-    inputs: tuple[InputDatasetReference, ...] = ()
-    outputs: tuple[OutputDatasetReference, ...] = ()
 
 
-class RunOpConfigBase(OpConfigBase):
+class RunOpConfigBase(OpConfigBase, RunBackendOpConfig):
     ...
 
 
-class ConsumeOpConfigBase(OpConfigBase):
+class ConsumeOpConfigBase(OpConfigBase, ConsumeBackendOpConfig):
     ...
 
 
-class ProduceOpConfigBase(OpConfigBase):
+class ProduceOpConfigBase(OpConfigBase, ProduceBackendOpConfig):
     ...
 
 
-class MapOpConfigBase(OpConfigBase):
+class MapOpConfigBase(OpConfigBase, MapBackendOpConfig):
     ...
 
 
-class MapReduceOpConfigBase(OpConfigBase):
+class MapReduceOpConfigBase(OpConfigBase, MapReduceBackendOpConfig):
     ...

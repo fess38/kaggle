@@ -15,4 +15,8 @@ class RunOpBase(OpBase):
         self._run_fn = run_fn
 
     def run(self):
-        self._backend.run(self.config, self._run_fn)
+        self._backend.run(
+            config=self.config,
+            run_fn=self._run_fn,
+            instruction_configs=self.backend_instruction_configs(),
+        )

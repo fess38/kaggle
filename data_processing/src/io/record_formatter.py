@@ -19,12 +19,12 @@ from pyarrow import csv
 class RecordFormatterBase(ConfigBase, abc.ABC):
     read_mode: str = "rb"
     write_mode: str = "wb"
-    paths_to_delete_on_read: set[PyTreePath] = None
-    paths_to_delete_on_write: set[PyTreePath] = None
-    paths_to_move_on_read: dict[PyTreePath, PyTreePath] = None
-    paths_to_move_on_write: dict[PyTreePath, PyTreePath] = None
-    columns_to_keep_on_read: set[str] = None
-    columns_to_keep_on_write: set[str] = None
+    paths_to_delete_on_read: set[PyTreePath] | None = None
+    paths_to_delete_on_write: set[PyTreePath] | None = None
+    paths_to_move_on_read: dict[PyTreePath, PyTreePath] = {}
+    paths_to_move_on_write: dict[PyTreePath, PyTreePath] = {}
+    columns_to_keep_on_read: set[str] | None = None
+    columns_to_keep_on_write: set[str] | None = None
 
     def read(self, f: IO) -> Iterator[PyTree]:
         for record in self._read_impl(f):

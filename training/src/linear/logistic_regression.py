@@ -2,6 +2,11 @@ from typing import Iterable
 
 import joblib
 import more_itertools
+from fess38.data_processing.backend.instruction.config import (
+    BackendInstructionConfig,
+    SetInputRecordClassInstructionConfig,
+    SetOutputRecordClassInstructionConfig,
+)
 from fess38.data_processing.operation.mapper.base import MapOpBase
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 
@@ -17,6 +22,13 @@ class LogisticRegressionTrainOp(TrainOpBase):
             "LogisticRegression": LogisticRegression,
             "SGDClassifier": SGDClassifier,
         }
+
+    def backend_instruction_configs(self) -> list[BackendInstructionConfig]:
+        return [
+            SetInputRecordClassInstructionConfig(
+                record_class=f"{SampleRecord.__module__}.{SampleRecord.__name__}",
+            )
+        ]
 
     def _train_fn(self, records: Iterable[SampleRecord], role: str | None):
         model = self._model_name_to_cls[self.config.model_name](
@@ -41,13 +53,24 @@ class LogisticRegressionInferenceOp(MapOpBase):
     def __init__(self, config: LogisticRegressionInferenceOpConfig):
         super().__init__(config, self._map_fn)
 
+    def backend_instruction_configs(self) -> list[BackendInstructionConfig]:
+        return [
+            SetInputRecordClassInstructionConfig(
+                record_class=f"{SampleRecord.__module__}.{SampleRecord.__name__}",
+            ),
+            SetOutputRecordClassInstructionConfig(
+                record_class=(
+                    f"{PredictionRecord.__module__}.{PredictionRecord.__name__}"
+                ),
+            ),
+        ]
+
     def _map_fn(
         self, records: Iterable[SampleRecord], role: str | None
     ) -> Iterable[PredictionRecord]:
         model = joblib.load(self.config.input_files["model.bin"])
 
         for batch in more_itertools.batched(records, self.config.batch_size):
-            batch = list(batch)
             features = [record.num_features for record in batch]
             predictions = model.predict_proba(features).tolist()
 

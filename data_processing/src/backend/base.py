@@ -2,13 +2,6 @@ import abc
 import logging
 from typing import Sequence
 
-from ..operation.config import (
-    ConsumeOpConfigBase,
-    MapOpConfigBase,
-    MapReduceOpConfigBase,
-    ProduceOpConfigBase,
-    RunOpConfigBase,
-)
 from ..operation.protocol import (
     ConsumeFn,
     MapFn,
@@ -17,6 +10,14 @@ from ..operation.protocol import (
     ProduceFn,
     RunFn,
 )
+from .config import (
+    ConsumeBackendOpConfig,
+    MapBackendOpConfig,
+    MapReduceBackendOpConfig,
+    ProduceBackendOpConfig,
+    RunBackendOpConfig,
+)
+from .instruction.config import BackendInstructionConfig
 
 logger = logging.getLogger(__name__)
 
@@ -25,36 +26,45 @@ class BackendBase(abc.ABC):
     @abc.abstractmethod
     def run(
         self,
-        config: RunOpConfigBase,
+        config: RunBackendOpConfig,
         run_fn: RunFn,
+        instruction_configs: list[BackendInstructionConfig],
     ):
         ...
 
     @abc.abstractmethod
     def run_consume(
         self,
-        config: ConsumeOpConfigBase,
+        config: ConsumeBackendOpConfig,
         consume_fn: ConsumeFn,
+        instruction_configs: list[BackendInstructionConfig],
     ):
         ...
 
     @abc.abstractmethod
     def run_produce(
         self,
-        config: ProduceOpConfigBase,
+        config: ProduceBackendOpConfig,
         produce_fns: Sequence[ProduceFn],
+        instruction_configs: list[BackendInstructionConfig],
     ):
         ...
 
     @abc.abstractmethod
-    def run_map(self, config: MapOpConfigBase, map_fn: MapFn):
+    def run_map(
+        self,
+        config: MapBackendOpConfig,
+        map_fn: MapFn,
+        instruction_configs: list[BackendInstructionConfig],
+    ):
         ...
 
     @abc.abstractmethod
     def run_map_reduce(
         self,
-        config: MapReduceOpConfigBase,
+        config: MapReduceBackendOpConfig,
         map_fn: MapReduceMapFn,
         reduce_fn: MapReduceReduceFn,
+        instruction_configs: list[BackendInstructionConfig],
     ):
         ...

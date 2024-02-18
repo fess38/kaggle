@@ -15,4 +15,8 @@ class MapOpBase(OpBase):
         self._map_fn = map_fn
 
     def run(self):
-        self._backend.run_map(self.config, self._map_fn)
+        self._backend.run_map(
+            config=self.config,
+            map_fn=self._map_fn,
+            instruction_configs=self.backend_instruction_configs(),
+        )

@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from typing import Any
 
 from ..base import OpBase
 from ..config import ProduceOpConfigBase
@@ -18,7 +19,8 @@ class ProduceOpBase(OpBase):
 
     def run(self):
         self._backend.run_produce(
-            config=self.config,
-            produce_fns=self._produce_fns,
-            instruction_configs=self.backend_instruction_configs(),
+            config=self.config, produce_fns=self._produce_fns, **self._produce_kwargs()
         )
+
+    def _produce_kwargs(self) -> dict[str, Any]:
+        return {}

@@ -2,15 +2,9 @@ from typing import Iterable
 
 import joblib
 import more_itertools
-from fess38.data_processing.backend.instruction.config import (
-    BackendInstructionConfig,
-    SetInputRecordClassInstructionConfig,
-    SetOutputRecordClassInstructionConfig,
-)
-from fess38.data_processing.operation.mapper.base import MapOpBase
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 
-from ..base import TrainOpBase
+from ..base import InferenceOpBase, TrainOpBase
 from ..types import PredictionRecord, SampleRecord
 from .config import LogisticRegressionInferenceOpConfig, LogisticRegressionTrainOpConfig
 
@@ -22,13 +16,6 @@ class LogisticRegressionTrainOp(TrainOpBase):
             "LogisticRegression": LogisticRegression,
             "SGDClassifier": SGDClassifier,
         }
-
-    def backend_instruction_configs(self) -> list[BackendInstructionConfig]:
-        return [
-            SetInputRecordClassInstructionConfig(
-                record_class=f"{SampleRecord.__module__}.{SampleRecord.__name__}",
-            )
-        ]
 
     def _train_fn(self, records: Iterable[SampleRecord], role: str | None):
         model = self._model_name_to_cls[self.config.model_name](
@@ -49,21 +36,9 @@ class LogisticRegressionTrainOp(TrainOpBase):
         joblib.dump(model, self.config.output_files["model.bin"])
 
 
-class LogisticRegressionInferenceOp(MapOpBase):
+class LogisticRegressionInferenceOp(InferenceOpBase):
     def __init__(self, config: LogisticRegressionInferenceOpConfig):
         super().__init__(config, self._map_fn)
-
-    def backend_instruction_configs(self) -> list[BackendInstructionConfig]:
-        return [
-            SetInputRecordClassInstructionConfig(
-                record_class=f"{SampleRecord.__module__}.{SampleRecord.__name__}",
-            ),
-            SetOutputRecordClassInstructionConfig(
-                record_class=(
-                    f"{PredictionRecord.__module__}.{PredictionRecord.__name__}"
-                ),
-            ),
-        ]
 
     def _map_fn(
         self, records: Iterable[SampleRecord], role: str | None

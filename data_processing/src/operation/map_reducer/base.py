@@ -1,3 +1,5 @@
+from typing import Any
+
 from ..base import OpBase
 from ..config import MapReduceOpConfigBase
 from ..protocol import (
@@ -30,5 +32,8 @@ class MapReduceOpBase(OpBase):
             config=self.config,
             map_fn=self._map_fn,
             reduce_fn=self._reduce_fn,
-            instruction_configs=self.backend_instruction_configs(),
+            **self._map_reduce_kwargs(),
         )
+
+    def _map_reduce_kwargs(self) -> dict[str, Any]:
+        return {}

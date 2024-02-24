@@ -1,53 +1,36 @@
-from typing import Literal
+from typing import Sequence
 
 from fess38.util.registry import Registry
 
 from ..config import BackendOpConfig
-from .config import BackendInstructionConfig
+from .config import BackendInstructionBase, SetRecordClassInstruction
 
 instruction_library = Registry("instruction_library")
 
 
 def execute_instructions(
-    config: BackendOpConfig, instructions: list[BackendInstructionConfig]
+    config: BackendOpConfig, instructions: Sequence[BackendInstructionBase]
 ) -> BackendOpConfig:
+    config_dict = config.model_dump()
     for instruction in instructions:
-        config = instruction_library[instruction.type](config, instruction)
+        instruction_library[instruction.type](config_dict, instruction)
 
-    return config
+    return type(config).model_validate(config_dict)
 
 
-def _set_record_class(
-    io_type: Literal["inputs", "outputs"],
+@instruction_library("set_record_class")
+def set_record_class(
     config: BackendOpConfig,
-    instruction_config: BackendInstructionConfig,
+    instruction: SetRecordClassInstruction,
 ) -> BackendOpConfig:
-    patched_config = config.model_dump()
-    for i, io_item in enumerate(patched_config[io_type]):
+    for i, io_item in enumerate(config.get(instruction.io, [])):
         if (
-            (instruction_config.index is None and instruction_config.role is None)
-            or i == instruction_config.index
+            (instruction.index is None and instruction.role is None)
+            or i == instruction.index
             or (
-                io_item["role"] is not None
-                and io_item["role"] == instruction_config.role
+                io_item.get("role") is not None
+                and io_item.get("role") == instruction.role
             )
         ):
-            io_item["record_class"] = instruction_config.record_class
-
-    return type(config).model_validate(patched_config)
-
-
-@instruction_library("set_input_record_class")
-def set_input_record_class(
-    config: BackendOpConfig,
-    instruction_config: BackendInstructionConfig,
-) -> BackendOpConfig:
-    return _set_record_class("inputs", config, instruction_config)
-
-
-@instruction_library("set_output_record_class")
-def set_output_record_class(
-    config: BackendOpConfig,
-    instruction_config: BackendInstructionConfig,
-) -> BackendOpConfig:
-    return _set_record_class("outputs", config, instruction_config)
+            if io_item.get("record_class") is None:
+                io_item["record_class"] = instruction.record_class

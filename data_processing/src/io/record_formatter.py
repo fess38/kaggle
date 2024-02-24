@@ -73,11 +73,11 @@ class RecordFormatterBase(ConfigBase, abc.ABC):
 class CsvRecordFormatter(RecordFormatterBase):
     type: Literal["csv"] = "csv"
     skip_rows: int = 0
-    column_names: list[str] = None
+    column_names: list[str] | None = None
     delimiter: str = ","
     quote_char: str = '"'
     strings_can_be_null: bool = True
-    include_columns: list[str] = None
+    include_columns: list[str] | None = None
 
     def _read_impl(self, f: IO) -> Iterator[PyTree]:
         yield from csv.read_csv(

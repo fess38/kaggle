@@ -1,4 +1,5 @@
 import importlib
+import inspect
 from functools import cache
 from types import ModuleType
 
@@ -15,3 +16,7 @@ def find_class(class_name: str) -> type:
 
 def full_path(class_: type) -> str:
     return f"{class_.__module__}.{class_.__qualname__}"
+
+
+def constructor_keys(class_: type) -> set[str]:
+    return set(inspect.signature(class_).parameters.keys())

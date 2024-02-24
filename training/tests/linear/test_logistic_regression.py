@@ -5,6 +5,7 @@ from fess38.data_processing.operation.internal import create_dummy_op
 from fess38.training.linear.logistic_regression import (
     LogisticRegressionInferenceOp,
     LogisticRegressionTrainOp,
+    SGDClassifierTrainOp,
 )
 from fess38.training.types import SampleRecord
 from fess38.util.tests import create_faker
@@ -14,6 +15,7 @@ FAKE = create_faker()
 
 @pytest.mark.parametrize(
     (
+        "train_op_class",
         "train_config",
         "inference_config",
         "train_records",
@@ -22,7 +24,8 @@ FAKE = create_faker()
     ),
     [
         (
-            {"random_state": 1, "model_name": "LogisticRegression"},
+            LogisticRegressionTrainOp,
+            {"random_state": 1},
             {},
             FAKE.records(
                 1000,
@@ -47,11 +50,8 @@ FAKE = create_faker()
             48.49041,
         ),
         (
-            {
-                "random_state": 1,
-                "model_name": "SGDClassifier",
-                "kwargs": {"loss": "log_loss", "penalty": "l1", "max_iter": 100},
-            },
+            SGDClassifierTrainOp,
+            {"loss": "log_loss", "penalty": "l1", "max_iter": 100, "random_state": 1},
             {"batch_size": 32},
             FAKE.records(
                 10000,
@@ -77,8 +77,9 @@ FAKE = create_faker()
         ),
     ],
 )
-def test_linear_regression(
+def test_logistic_regression(
     tmp_path: Path,
+    train_op_class: type,
     train_config: dict,
     inference_config: dict,
     train_records: list[SampleRecord],
@@ -86,12 +87,12 @@ def test_linear_regression(
     expected: float,
 ):
     train_config.setdefault("output_files", {})
-    train_config["output_files"]["model.bin"] = str(tmp_path / "model.bin")
-    train_op = create_dummy_op(train_config, LogisticRegressionTrainOp)
+    train_config["output_files"]["model"] = str(tmp_path / "model.bin")
+    train_op = create_dummy_op(train_config, train_op_class)
     train_op._consume_fn(train_records, None)
 
     inference_config.setdefault("input_files", {})
-    inference_config["input_files"]["model.bin"] = str(tmp_path / "model.bin")
+    inference_config["input_files"]["model"] = str(tmp_path / "model.bin")
     inference_op = create_dummy_op(inference_config, LogisticRegressionInferenceOp)
 
     actual = sum(

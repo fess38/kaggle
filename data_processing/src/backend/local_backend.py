@@ -85,7 +85,11 @@ class LocalBackend(BackendBase):
             record_class = find_class(input.record_class)
 
         input_iterable = (
-            record_class(**input_record) if record_class else input_record
+            (
+                record_class.model_validate(input_record)
+                if record_class
+                else input_record
+            )
             for input_record in reader
         )
 
@@ -151,7 +155,11 @@ class LocalBackend(BackendBase):
             record_class = find_class(input.record_class)
 
         input_iterable = (
-            record_class(**input_record) if record_class else input_record
+            (
+                record_class.model_validate(input_record)
+                if record_class
+                else input_record
+            )
             for input_record in reader
         )
 
@@ -203,7 +211,11 @@ class LocalBackend(BackendBase):
             record_class = find_class(input.record_class)
 
         input_iterable = (
-            record_class(**input_record) if record_class else input_record
+            (
+                record_class.model_validate(input_record)
+                if record_class
+                else input_record
+            )
             for input_record in reader
         )
 

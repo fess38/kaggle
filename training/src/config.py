@@ -1,4 +1,4 @@
-from typing import Any, Literal
+from typing import Literal
 
 from fess38.data_processing.operation import operation_library
 from fess38.data_processing.operation.config import ConsumeOpConfigBase, MapOpConfigBase
@@ -8,8 +8,7 @@ from .metrics.metric_config import MetricConfig
 
 
 class TrainOpConfigBase(ConsumeOpConfigBase):
-    random_state: int = 0
-    kwargs: dict[str, Any] = {}
+    ...
 
 
 @operation_library("fess38.training.train_test_split.TrainTestSplitMapOp")

@@ -1,26 +1,15 @@
-from typing import Annotated, Literal
+from typing import Literal
 
-import pydantic
 from fess38.util.config import ConfigBase
 
 
-class BackendInstructionConfigBase(ConfigBase):
+class BackendInstructionBase(ConfigBase):
     ...
 
 
-class SetInputRecordClassInstructionConfig(BackendInstructionConfigBase):
-    type: Literal["set_input_record_class"] = "set_input_record_class"
+class SetRecordClassInstruction(BackendInstructionBase):
+    type: Literal["set_record_class"] = "set_record_class"
+    io: Literal["inputs", "outputs"]
     record_class: str
     index: int | None = None
     role: str | None = None
-
-
-class SetOutputRecordClassInstructionConfig(SetInputRecordClassInstructionConfig):
-    type: Literal["set_output_record_class"] = "set_output_record_class"
-
-
-BackendInstructionConfig = Annotated[
-    SetInputRecordClassInstructionConfig,
-    SetOutputRecordClassInstructionConfig,
-    pydantic.Field(discriminator="type"),
-]

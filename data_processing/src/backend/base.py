@@ -17,7 +17,7 @@ from .config import (
     ProduceBackendOpConfig,
     RunBackendOpConfig,
 )
-from .instruction.config import BackendInstructionConfig
+from .instruction.config import BackendInstructionBase
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class BackendBase(abc.ABC):
         self,
         config: RunBackendOpConfig,
         run_fn: RunFn,
-        instruction_configs: list[BackendInstructionConfig],
+        instructions: Sequence[BackendInstructionBase] | None = None,
     ):
         ...
 
@@ -37,7 +37,7 @@ class BackendBase(abc.ABC):
         self,
         config: ConsumeBackendOpConfig,
         consume_fn: ConsumeFn,
-        instruction_configs: list[BackendInstructionConfig],
+        instructions: Sequence[BackendInstructionBase] | None = None,
     ):
         ...
 
@@ -46,7 +46,7 @@ class BackendBase(abc.ABC):
         self,
         config: ProduceBackendOpConfig,
         produce_fns: Sequence[ProduceFn],
-        instruction_configs: list[BackendInstructionConfig],
+        instructions: Sequence[BackendInstructionBase] | None = None,
     ):
         ...
 
@@ -55,7 +55,7 @@ class BackendBase(abc.ABC):
         self,
         config: MapBackendOpConfig,
         map_fn: MapFn,
-        instruction_configs: list[BackendInstructionConfig],
+        instructions: Sequence[BackendInstructionBase] | None = None,
     ):
         ...
 
@@ -65,6 +65,6 @@ class BackendBase(abc.ABC):
         config: MapReduceBackendOpConfig,
         map_fn: MapReduceMapFn,
         reduce_fn: MapReduceReduceFn,
-        instruction_configs: list[BackendInstructionConfig],
+        instructions: Sequence[BackendInstructionBase] | None = None,
     ):
         ...

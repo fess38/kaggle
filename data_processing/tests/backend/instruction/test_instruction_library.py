@@ -1,7 +1,7 @@
 import pytest
-from fess38.data_processing.backend.instruction.config import BackendInstructionConfig
+from fess38.data_processing.backend.instruction.config import SetRecordClassInstruction
 from fess38.data_processing.backend.instruction.instruction_library import (
-    set_input_record_class,
+    execute_instructions,
 )
 from fess38.data_processing.operation.config import MapOpConfigBase
 
@@ -17,6 +17,13 @@ from fess38.data_processing.operation.config import MapOpConfigBase
                         "type": "file",
                         "path": "0",
                         "record_formatter": {"type": "jsonl"},
+                        "record_class": "spam",
+                    },
+                    {
+                        "type": "file",
+                        "path": "1",
+                        "record_formatter": {"type": "jsonl"},
+                        "record_class": None,
                     },
                     {
                         "type": "file",
@@ -26,19 +33,27 @@ from fess38.data_processing.operation.config import MapOpConfigBase
                 ],
             },
             {
-                "type": "set_input_record_class",
+                "type": "set_record_class",
+                "io": "inputs",
                 "record_class": "foo.bar",
             },
-            [0, 1],
+            ["spam", "foo.bar", "foo.bar"],
         ),
         (
             {
                 "name": "",
-                "inputs": [
+                "outputs": [
                     {
                         "type": "file",
                         "path": "0",
                         "record_formatter": {"type": "jsonl"},
+                        "record_class": "spam",
+                    },
+                    {
+                        "type": "file",
+                        "path": "1",
+                        "record_formatter": {"type": "jsonl"},
+                        "record_class": None,
                     },
                     {
                         "type": "file",
@@ -48,11 +63,12 @@ from fess38.data_processing.operation.config import MapOpConfigBase
                 ],
             },
             {
-                "type": "set_input_record_class",
+                "type": "set_record_class",
+                "io": "outputs",
                 "record_class": "foo.bar",
                 "index": 1,
             },
-            [1],
+            ["spam", "foo.bar", None],
         ),
         (
             {
@@ -68,6 +84,7 @@ from fess38.data_processing.operation.config import MapOpConfigBase
                         "path": "1",
                         "role": "foo",
                         "record_formatter": {"type": "jsonl"},
+                        "record_class": "spam",
                     },
                     {
                         "type": "file",
@@ -78,21 +95,19 @@ from fess38.data_processing.operation.config import MapOpConfigBase
                 ],
             },
             {
-                "type": "set_input_record_class",
+                "type": "set_record_class",
+                "io": "inputs",
                 "record_class": "foo.bar",
                 "role": "foo",
             },
-            [1, 2],
+            [None, "spam", "foo.bar"],
         ),
     ],
 )
-def test_set_input_record_class(config: dict, instruction: dict, expected: list[int]):
-    actual = set_input_record_class(
+def test_set_record_class(config: dict, instruction: dict, expected: list[str]):
+    actual = execute_instructions(
         MapOpConfigBase.model_validate(config),
-        BackendInstructionConfig.model_validate(instruction),
+        [SetRecordClassInstruction.model_validate(instruction)],
     )
     for i, input in enumerate(actual.inputs):
-        if i in expected:
-            assert input.record_class is not None
-        else:
-            assert input.record_class is None
+        assert input.record_class == expected[i]

@@ -1,11 +1,9 @@
 import functools
-from typing import Iterable
+from typing import Any, Iterable
 
-from fess38.data_processing.backend.instruction.config import (
-    BackendInstructionConfig,
-    SetInputRecordClassInstructionConfig,
-)
+from fess38.data_processing.backend.instruction.config import SetRecordClassInstruction
 from fess38.data_processing.operation.consumer.base import ConsumeOpBase
+from fess38.util.reflection import full_path
 from fess38.util.wandb import wandb_init
 
 from ..config import MetricCalculationConsumeOpConfig
@@ -24,16 +22,16 @@ class MetricCalculationConsumeOp(ConsumeOpBase):
             metric_kwargs = metric_config.model_dump(exclude={"vars", "type"})
             self._metric_fns.append(functools.partial(metric_fn, **metric_kwargs))
 
-    def backend_instruction_configs(self) -> list[BackendInstructionConfig]:
-        return [
-            SetInputRecordClassInstructionConfig(
-                record_class=(
-                    f"{PredictionRecord.__module__}.{PredictionRecord.__name__}"
-                ),
-            )
-        ]
-
     def _consume_fn(self, records: Iterable[PredictionRecord], role: str | None):
         records = list(records)
         for metric_fn in self._metric_fns:
             metric_fn(records)
+
+    def _consume_kwargs(self) -> dict[str, Any]:
+        return {
+            "instructions": [
+                SetRecordClassInstruction(
+                    io="inputs", record_class=full_path(PredictionRecord)
+                )
+            ]
+        }

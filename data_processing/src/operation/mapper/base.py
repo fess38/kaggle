@@ -1,3 +1,5 @@
+from typing import Any
+
 from ..base import OpBase
 from ..config import MapOpConfigBase
 from ..protocol import MapAggregatorFn, MapFn
@@ -16,7 +18,8 @@ class MapOpBase(OpBase):
 
     def run(self):
         self._backend.run_map(
-            config=self.config,
-            map_fn=self._map_fn,
-            instruction_configs=self.backend_instruction_configs(),
+            config=self.config, map_fn=self._map_fn, **self._map_kwargs()
         )
+
+    def _map_kwargs(self) -> dict[str, Any]:
+        return {}

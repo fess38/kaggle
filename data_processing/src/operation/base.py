@@ -2,7 +2,6 @@ import abc
 
 from ..backend.backend import create_backend
 from ..backend.config import BackendConfig
-from ..backend.instruction.config import BackendInstructionConfig
 from .config import OpConfigBase
 
 
@@ -22,6 +21,3 @@ class OpBase(abc.ABC):
     @abc.abstractmethod
     def run(self):
         ...
-
-    def backend_instruction_configs(self) -> list[BackendInstructionConfig]:
-        return []

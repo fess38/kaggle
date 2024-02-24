@@ -5,6 +5,7 @@ from fess38.data_processing.operation.internal import create_dummy_op
 from fess38.training.linear.linear_regression import (
     LinearRegressionInferenceOp,
     LinearRegressionTrainOp,
+    SGDRegressorTrainOp,
 )
 from fess38.training.types import SampleRecord
 from fess38.util.tests import create_faker
@@ -14,6 +15,7 @@ FAKE = create_faker()
 
 @pytest.mark.parametrize(
     (
+        "train_op_class",
         "train_config",
         "inference_config",
         "train_records",
@@ -22,7 +24,8 @@ FAKE = create_faker()
     ),
     [
         (
-            {"model_name": "LinearRegression"},
+            LinearRegressionTrainOp,
+            {},
             {},
             FAKE.records(
                 1000,
@@ -44,9 +47,11 @@ FAKE = create_faker()
             49.64688,
         ),
         (
+            SGDRegressorTrainOp,
             {
-                "model_name": "SGDRegressor",
-                "kwargs": {"random_state": 1, "penalty": "l1", "max_iter": 100},
+                "random_state": 1,
+                "penalty": "l1",
+                "max_iter": 100,
             },
             {"batch_size": 32},
             FAKE.records(
@@ -72,6 +77,7 @@ FAKE = create_faker()
 )
 def test_linear_regression(
     tmp_path: Path,
+    train_op_class: type,
     train_config: dict,
     inference_config: dict,
     train_records: list[SampleRecord],
@@ -79,12 +85,12 @@ def test_linear_regression(
     expected: float,
 ):
     train_config.setdefault("output_files", {})
-    train_config["output_files"]["model.bin"] = str(tmp_path / "model.bin")
-    train_op = create_dummy_op(train_config, LinearRegressionTrainOp)
+    train_config["output_files"]["model"] = str(tmp_path / "model.bin")
+    train_op = create_dummy_op(train_config, train_op_class)
     train_op._consume_fn(train_records, None)
 
     inference_config.setdefault("input_files", {})
-    inference_config["input_files"]["model.bin"] = str(tmp_path / "model.bin")
+    inference_config["input_files"]["model"] = str(tmp_path / "model.bin")
     inference_op = create_dummy_op(inference_config, LinearRegressionInferenceOp)
 
     actual = sum(

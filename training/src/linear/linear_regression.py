@@ -1,27 +1,32 @@
+import abc
 from typing import Iterable
 
 import joblib
 import more_itertools
+from fess38.util.reflection import constructor_keys
 from sklearn.linear_model import LinearRegression, SGDRegressor
 
 from ..base import InferenceOpBase, TrainOpBase
 from ..types import PredictionRecord, SampleRecord
-from .config import LinearRegressionInferenceOpConfig, LinearRegressionTrainOpConfig
+from .config import (
+    LinearRegressionInferenceOpConfig,
+    LinearRegressionTrainOpConfig,
+    SGDRegressorTrainOpConfig,
+)
+
+_MODEL_TYPE = LinearRegression | SGDRegressor
 
 
-class LinearRegressionTrainOp(TrainOpBase):
-    def __init__(self, config: LinearRegressionTrainOpConfig):
+class LinearRegressionTrainOpBase(TrainOpBase):
+    def __init__(
+        self, config: LinearRegressionTrainOpConfig | SGDRegressorTrainOpConfig
+    ):
         super().__init__(config, self._consume_fn)
-        self._model_name_to_cls = {
-            "LinearRegression": LinearRegression,
-            "SGDRegressor": SGDRegressor,
-        }
+        self._model: _MODEL_TYPE = self.create_model()
 
     def _consume_fn(self, records: Iterable[SampleRecord], role: str | None):
-        model = self._model_name_to_cls[self.config.model_name](**self.config.kwargs)
-
         records = list(records)
-        model.fit(
+        self._model.fit(
             X=[record.num_features for record in records],
             y=[record.labels[0] for record in records],
             sample_weight=(
@@ -31,7 +36,33 @@ class LinearRegressionTrainOp(TrainOpBase):
             ),
         )
 
-        joblib.dump(model, self.config.output_files["model.bin"])
+        joblib.dump(self._model, self.config.output_files["model"])
+
+    @abc.abstractmethod
+    def create_model(self) -> _MODEL_TYPE:
+        ...
+
+
+class LinearRegressionTrainOp(LinearRegressionTrainOpBase):
+    def __init__(self, config: LinearRegressionTrainOpConfig):
+        super().__init__(config)
+
+    def create_model(self) -> LinearRegression:
+        params = self._config.model_dump(
+            include=constructor_keys(LinearRegression), exclude_unset=True
+        )
+        return LinearRegression(**params)
+
+
+class SGDRegressorTrainOp(LinearRegressionTrainOpBase):
+    def __init__(self, config: SGDRegressorTrainOpConfig):
+        super().__init__(config)
+
+    def create_model(self) -> SGDRegressor:
+        params = self._config.model_dump(
+            include=constructor_keys(SGDRegressor), exclude_unset=True
+        )
+        return SGDRegressor(**params)
 
 
 class LinearRegressionInferenceOp(InferenceOpBase):
@@ -43,7 +74,7 @@ class LinearRegressionInferenceOp(InferenceOpBase):
         records: Iterable[SampleRecord],
         role: str | None,
     ) -> Iterable[PredictionRecord]:
-        model = joblib.load(self.config.input_files["model.bin"])
+        model: _MODEL_TYPE = joblib.load(self.config.input_files["model"])
 
         for batch in more_itertools.batched(records, self.config.batch_size):
             features = [record.num_features for record in batch]

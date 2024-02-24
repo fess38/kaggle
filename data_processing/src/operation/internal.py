@@ -41,4 +41,4 @@ def create_dummy_op(
         for _ in range(num_outputs or 1):
             config["outputs"].append(dataset_reference_config)
 
-    return op_class(config_class(**config))
+    return op_class(config_class.model_validate(config))

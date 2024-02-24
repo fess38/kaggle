@@ -34,7 +34,7 @@ from fess38.util.typing import PyTree
 )
 def test_csv_record_formatter(tmp_path: Path, params: dict, records: list[PyTree]):
     file = tmp_path / "foo.csv"
-    record_formatter = CsvRecordFormatter(**params)
+    record_formatter = CsvRecordFormatter.model_validate(params)
     with file.open(record_formatter.write_mode) as f:
         record_formatter.write(f, records)
 
@@ -51,7 +51,7 @@ def test_csv_record_formatter(tmp_path: Path, params: dict, records: list[PyTree
 )
 def test_jsonl_record_formatter(tmp_path: Path, params: dict, records: list[PyTree]):
     file = tmp_path / "foo.jsonl"
-    record_formatter = JsonlRecordFormatter(**params)
+    record_formatter = JsonlRecordFormatter.model_validate(params)
     with file.open(record_formatter.write_mode) as f:
         record_formatter.write(f, records)
 
@@ -82,7 +82,7 @@ def test_base_record_formatter(
     tmp_path: Path, params: dict, records: list[PyTree], expected: list[PyTree]
 ):
     file = tmp_path / "foo.jsonl"
-    record_formatter = JsonlRecordFormatter(**params)
+    record_formatter = JsonlRecordFormatter.model_validate(params)
     with file.open(record_formatter.write_mode) as f:
         record_formatter.write(f, records)
 
@@ -99,7 +99,7 @@ def test_base_record_formatter(
 )
 def test_parquet_record_formatter(tmp_path: Path, params: dict, records: list[PyTree]):
     file = tmp_path / "foo.parquet"
-    record_formatter = ParquetRecordFormatter(**params)
+    record_formatter = ParquetRecordFormatter.model_validate(params)
     with file.open(record_formatter.write_mode) as f:
         record_formatter.write(f, records)
 

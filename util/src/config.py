@@ -29,4 +29,4 @@ class ConfigBase(pydantic.BaseModel, Generic[T]):
     def from_file(cls: type[T], path: PathLike) -> T:
         config = OmegaConf.to_object(OmegaConf.load(path))
         set_record_formatter_by_extension(config)
-        return cls(**config)
+        return cls.model_validate(config)

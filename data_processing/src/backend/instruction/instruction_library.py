@@ -2,15 +2,15 @@ from typing import Sequence
 
 from fess38.util.registry import Registry
 
-from ..config import BackendOpConfig
+from ..config import BackendOpConfigBase
 from .config import BackendInstructionBase, SetRecordClassInstruction
 
 instruction_library = Registry("instruction_library")
 
 
 def execute_instructions(
-    config: BackendOpConfig, instructions: Sequence[BackendInstructionBase]
-) -> BackendOpConfig:
+    config: BackendOpConfigBase, instructions: Sequence[BackendInstructionBase]
+) -> BackendOpConfigBase:
     config_dict = config.model_dump()
     for instruction in instructions:
         instruction_library[instruction.type](config_dict, instruction)
@@ -19,18 +19,15 @@ def execute_instructions(
 
 
 @instruction_library("set_record_class")
-def set_record_class(
-    config: BackendOpConfig,
-    instruction: SetRecordClassInstruction,
-) -> BackendOpConfig:
-    for i, io_item in enumerate(config.get(instruction.io, [])):
+def set_record_class(config: dict, instruction: SetRecordClassInstruction):
+    for i, dataset_reference in enumerate(config.get(instruction.io, [])):
         if (
             (instruction.index is None and instruction.role is None)
             or i == instruction.index
             or (
-                io_item.get("role") is not None
-                and io_item.get("role") == instruction.role
+                dataset_reference.get("role") is not None
+                and dataset_reference.get("role") == instruction.role
             )
         ):
-            if io_item.get("record_class") is None:
-                io_item["record_class"] = instruction.record_class
+            if dataset_reference.get("record_class") is None:
+                dataset_reference["record_class"] = instruction.record_class

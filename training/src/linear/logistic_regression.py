@@ -3,7 +3,6 @@ from typing import Iterable
 
 import joblib
 import more_itertools
-from fess38.util.reflection import constructor_keys
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 
 from ..base import InferenceOpBase, TrainOpBase
@@ -48,10 +47,7 @@ class LogisticRegressionTrainOp(LogisticRegressionTrainOpBase):
         super().__init__(config)
 
     def create_model(self) -> LogisticRegression:
-        params = self._config.model_dump(
-            include=constructor_keys(LogisticRegression), exclude_unset=True
-        )
-        return LogisticRegression(**params)
+        return LogisticRegression(**self.config.kwargs)
 
 
 class SGDClassifierTrainOp(LogisticRegressionTrainOpBase):
@@ -59,10 +55,7 @@ class SGDClassifierTrainOp(LogisticRegressionTrainOpBase):
         super().__init__(config)
 
     def create_model(self) -> SGDClassifier:
-        params = self._config.model_dump(
-            include=constructor_keys(SGDClassifier), exclude_unset=True
-        )
-        return SGDClassifier(**params)
+        return SGDClassifier(**self.config.kwargs)
 
 
 class LogisticRegressionInferenceOp(InferenceOpBase):

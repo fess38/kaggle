@@ -1,7 +1,12 @@
-from .linear_regression import LinearRegressionInferenceOp, LinearRegressionTrainOp
+from .linear_regression import (
+    LinearRegressionInferenceOp,
+    LinearRegressionTrainOp,
+    SGDRegressorTrainOp,
+)
 from .logistic_regression import (
     LogisticRegressionInferenceOp,
     LogisticRegressionTrainOp,
+    SGDClassifierTrainOp,
 )
 
 __all__ = [
@@ -9,4 +14,6 @@ __all__ = [
     "LinearRegressionTrainOp",
     "LogisticRegressionInferenceOp",
     "LogisticRegressionTrainOp",
+    "SGDClassifierTrainOp",
+    "SGDRegressorTrainOp",
 ]

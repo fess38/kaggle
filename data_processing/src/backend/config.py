@@ -45,13 +45,3 @@ class MapBackendOpConfig(BackendOpConfigBase):
 
 class MapReduceBackendOpConfig(BackendOpConfigBase):
     ...
-
-
-BackendOpConfig = Annotated[
-    RunBackendOpConfig,
-    ConsumeBackendOpConfig,
-    ProduceBackendOpConfig,
-    MapBackendOpConfig,
-    MapReduceBackendOpConfig,
-    pydantic.Field(discriminator="type"),
-]

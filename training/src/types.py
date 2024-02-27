@@ -1,4 +1,13 @@
+from enum import Enum
+from functools import cache
+
 from pydantic import BaseModel
+
+
+class FeatureNameBase(str, Enum):
+    @cache
+    def index(self) -> int:
+        return list(type(self)).index(self)
 
 
 class SampleRecord(BaseModel, extra="forbid"):

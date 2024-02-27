@@ -3,7 +3,6 @@ from typing import Iterable
 
 import joblib
 import more_itertools
-from fess38.util.reflection import constructor_keys
 from sklearn.linear_model import LinearRegression, SGDRegressor
 
 from ..base import InferenceOpBase, TrainOpBase
@@ -48,10 +47,7 @@ class LinearRegressionTrainOp(LinearRegressionTrainOpBase):
         super().__init__(config)
 
     def create_model(self) -> LinearRegression:
-        params = self._config.model_dump(
-            include=constructor_keys(LinearRegression), exclude_unset=True
-        )
-        return LinearRegression(**params)
+        return LinearRegression(**self.config.kwargs)
 
 
 class SGDRegressorTrainOp(LinearRegressionTrainOpBase):
@@ -59,10 +55,7 @@ class SGDRegressorTrainOp(LinearRegressionTrainOpBase):
         super().__init__(config)
 
     def create_model(self) -> SGDRegressor:
-        params = self._config.model_dump(
-            include=constructor_keys(SGDRegressor), exclude_unset=True
-        )
-        return SGDRegressor(**params)
+        return SGDRegressor(**self.config.kwargs)
 
 
 class LinearRegressionInferenceOp(InferenceOpBase):

@@ -25,7 +25,7 @@ FAKE = create_faker()
     [
         (
             LogisticRegressionTrainOp,
-            {"random_state": 1},
+            {"kwargs": {"random_state": 1}},
             {},
             FAKE.records(
                 1000,
@@ -51,7 +51,14 @@ FAKE = create_faker()
         ),
         (
             SGDClassifierTrainOp,
-            {"loss": "log_loss", "penalty": "l1", "max_iter": 100, "random_state": 1},
+            {
+                "kwargs": {
+                    "loss": "log_loss",
+                    "penalty": "l1",
+                    "max_iter": 100,
+                    "random_state": 1,
+                }
+            },
             {"batch_size": 32},
             FAKE.records(
                 10000,

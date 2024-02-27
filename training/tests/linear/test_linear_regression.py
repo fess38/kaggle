@@ -48,11 +48,7 @@ FAKE = create_faker()
         ),
         (
             SGDRegressorTrainOp,
-            {
-                "random_state": 1,
-                "penalty": "l1",
-                "max_iter": 100,
-            },
+            {"kwargs": {"random_state": 1, "penalty": "l1", "max_iter": 100}},
             {"batch_size": 32},
             FAKE.records(
                 10000,
